@@ -22,12 +22,27 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const session = await getServerSession(authOptions);
 
   return (
-    <html lang="en">
+    <html lang="en" style={{ background: '#f1f5f9' }}>
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#00d4ff" />
+        {/* Critical inline CSS — fires before any stylesheet loads, eliminates FOUC */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          html, body {
+            background: #f1f5f9 !important;
+            color: #0f172a;
+            margin: 0;
+          }
+          /* Hide body briefly until CSS is ready — removes flash of unstyled content */
+          body { opacity: 0; transition: opacity 0.15s ease; }
+        ` }} />
+        <script dangerouslySetInnerHTML={{ __html: `
+          document.addEventListener('DOMContentLoaded', function() {
+            document.body.style.opacity = '1';
+          });
+        ` }} />
+        <meta name="theme-color" content="#f1f5f9" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="CMM Grid" />
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         {/* Service Worker — register on load. skipWaiting() in sw.js handles self-updates. */}

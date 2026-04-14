@@ -102,33 +102,45 @@ export const authOptions: NextAuthOptions = {
       if (!user.email) return false;
 
       try {
-        // 1. Try Supabase first
+        // 1. Check if user already exists (Supabase first, local store fallback)
         const existingInDB = await findUserInSupabase(user.email);
+        const existingLocal = await findUserInLocalStore(user.email);
 
-        if (!existingInDB) {
-          // Not in Supabase — check if they're the first user (becomes ADMIN)
-          const count = await countUsersInSupabase();
-          const isFirstUser = count === 0 || count === null;
+        if (!existingInDB && !existingLocal) {
+          // Brand-new user — determine their role
+          // Count users in Supabase; if Supabase is unavailable, count local store users
+          let supabaseCount = await countUsersInSupabase();
+          let localCount: number | null = null;
 
-          // Check local store as secondary source
-          const existingLocal = await findUserInLocalStore(user.email);
-          if (!existingLocal) {
-            const role = isFirstUser ? "ADMIN" : "PENDING";
-            await insertUserInSupabase({
-              id: user.email,
-              email: user.email,
-              name: user.name || "Unknown",
-              image: user.image || "",
-              role,
-            });
-            await saveUserToLocalStore({
-              id: user.email,
-              email: user.email,
-              name: user.name || "Unknown",
-              image: user.image || "",
-              role,
-            });
-          }
+          try {
+            const { readStore } = await import("@/lib/store");
+            localCount = readStore().users.length;
+          } catch { /* ignore */ }
+
+          // Only grant ADMIN if there are genuinely ZERO users in any source
+          // If either source is unavailable but the other has users, new user is PENDING
+          const totalKnownUsers =
+            supabaseCount !== null ? supabaseCount :
+            localCount !== null ? localCount :
+            1; // Both DBs unreachable — assume users exist, default to PENDING (safe)
+
+          const isFirstUser = totalKnownUsers === 0;
+          const role = isFirstUser ? "ADMIN" : "PENDING";
+
+          await insertUserInSupabase({
+            id: user.email,
+            email: user.email,
+            name: user.name || "Unknown",
+            image: user.image || "",
+            role,
+          });
+          await saveUserToLocalStore({
+            id: user.email,
+            email: user.email,
+            name: user.name || "Unknown",
+            image: user.image || "",
+            role,
+          });
         }
       } catch (err) {
         console.error("[auth] signIn callback error:", err);
