@@ -109,7 +109,7 @@ export const authOptions: NextAuthOptions = {
         if (!existingInDB && !existingLocal) {
           // Brand-new user — determine their role
           // Count users in Supabase; if Supabase is unavailable, count local store users
-          let supabaseCount = await countUsersInSupabase();
+          const supabaseCount = await countUsersInSupabase();
           let localCount: number | null = null;
 
           try {
