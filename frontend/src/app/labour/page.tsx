@@ -58,7 +58,7 @@ export default function LabourPage() {
       setShowModal(false);
       setForm(DEFAULT_FORM);
       await load();
-    } catch (err) {
+    } catch {
       toast.error("Network error. Please try again.");
     } finally {
       setSaving(false);

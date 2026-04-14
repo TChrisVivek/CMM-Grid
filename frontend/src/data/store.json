@@ -1,258 +1,36 @@
 {
-  "products": [
+  "products": [],
+  "projects": [],
+  "allocations": [],
+  "usages": [],
+  "workers": [],
+  "assignments": [],
+  "attendance": [],
+  "payments": [],
+  "clientPayments": [],
+  "directPurchases": [],
+  "users": [
     {
-      "id": 1,
-      "sku": "WIR-001",
-      "name": "2.5mm PVC Copper Wire",
-      "unit": "Meter",
-      "totalQty": 2000,
-      "warehouseQty": 1498,
-      "lowStockThreshold": 200,
-      "unitPrice": 45,
-      "createdAt": "2026-04-03T07:33:24.975Z"
-    }
-  ],
-  "projects": [
-    {
-      "id": 1,
-      "name": "S.R. Associates Site",
-      "siteAddress": "Plot 14, Sector 7, Faridabad",
-      "status": "ACTIVE",
-      "createdAt": "2026-04-03T07:45:50.398Z",
-      "electricalPlans": []
-    },
-    {
-      "id": 2,
-      "name": "Greenview Apartments Block-C",
-      "siteAddress": "Greenview Colony, Gurgaon",
-      "status": "ACTIVE",
-      "createdAt": "2026-04-03T07:46:32.667Z"
-    }
-  ],
-  "allocations": [
-    {
-      "id": 1,
-      "productId": 1,
-      "productName": "2.5mm PVC Copper Wire",
-      "productSku": "WIR-001",
-      "productUnit": "Meter",
-      "projectId": 1,
-      "projectName": "S.R. Associates Site",
-      "quantity": 500,
-      "allocatedDate": "2026-04-03",
-      "notes": ""
-    },
-    {
-      "id": 2,
-      "productId": 1,
-      "productName": "2.5mm PVC Copper Wire",
-      "productSku": "WIR-001",
-      "productUnit": "Meter",
-      "projectId": 1,
-      "projectName": "S.R. Associates Site",
-      "quantity": 2,
-      "allocatedDate": "2026-04-03",
-      "notes": ""
+      "id": "chrisvivek.t@gmail.com",
+      "email": "chrisvivek.t@gmail.com",
+      "name": "Chris Vivek T",
+      "image": "https://lh3.googleusercontent.com/a/ACg8ocJfir-nYDrosdGAnEHQWfHOh5d9J6I34MqU3Rcym7leUbfwkbXm=s96-c",
+      "role": "ADMIN",
+      "createdAt": "2026-04-14T18:27:01.867Z"
     }
   ],
   "_meta": {
-    "nextProductId": 2,
-    "nextProjectId": 3,
-    "nextAllocationId": 3,
-    "nextUsageId": 3,
-    "nextWorkerId": 2,
-    "nextAssignmentId": 2,
-    "nextAttendanceId": 24,
-    "nextPaymentId": 5,
-    "nextClientPaymentId": 2,
+    "nextProductId": 1,
+    "nextProjectId": 1,
+    "nextAllocationId": 1,
+    "nextUsageId": 1,
+    "nextWorkerId": 1,
+    "nextAssignmentId": 1,
+    "nextAttendanceId": 1,
+    "nextPaymentId": 1,
+    "nextClientPaymentId": 1,
     "nextDirectPurchaseId": 1
   },
-  "usages": [
-    {
-      "id": 1,
-      "productId": 1,
-      "productName": "2.5mm PVC Copper Wire",
-      "productSku": "WIR-001",
-      "productUnit": "Meter",
-      "projectId": 1,
-      "projectName": "S.R. Associates Site",
-      "quantity": 150,
-      "usedDate": "2026-04-03",
-      "notes": "3rd floor wiring"
-    },
-    {
-      "id": 2,
-      "productId": 1,
-      "productName": "2.5mm PVC Copper Wire",
-      "productSku": "WIR-001",
-      "productUnit": "Meter",
-      "projectId": 1,
-      "projectName": "S.R. Associates Site",
-      "quantity": 6,
-      "usedDate": "2026-04-03",
-      "notes": ""
-    }
-  ],
-  "workers": [
-    {
-      "id": 1,
-      "name": "Raju Sharma",
-      "phone": "9812345678",
-      "trade": "Electrician",
-      "dailyRate": 800,
-      "createdAt": "2026-04-03T08:24:10.616Z",
-      "isActive": true
-    }
-  ],
-  "assignments": [
-    {
-      "id": 1,
-      "workerId": 1,
-      "workerName": "Raju Sharma",
-      "workerTrade": "Electrician",
-      "projectId": 1,
-      "projectName": "S.R. Associates Site",
-      "startDate": "2026-04-03",
-      "endDate": "2026-04-05",
-      "notes": ""
-    }
-  ],
-  "attendance": [
-    {
-      "id": 1,
-      "workerId": 1,
-      "workerName": "Raju Sharma",
-      "date": "2026-04-01",
-      "present": true,
-      "projectId": 0,
-      "projectName": "",
-      "notes": ""
-    },
-    {
-      "id": 3,
-      "workerId": 1,
-      "workerName": "Raju Sharma",
-      "date": "2026-04-03",
-      "present": true,
-      "projectId": 1,
-      "projectName": "S.R. Associates Site",
-      "notes": ""
-    },
-    {
-      "id": 4,
-      "workerId": 1,
-      "workerName": "Raju Sharma",
-      "date": "2026-03-23",
-      "present": true,
-      "projectId": 0,
-      "projectName": "",
-      "notes": ""
-    },
-    {
-      "id": 5,
-      "workerId": 1,
-      "workerName": "Raju Sharma",
-      "date": "2026-03-25",
-      "present": true,
-      "projectId": 0,
-      "projectName": "",
-      "notes": ""
-    },
-    {
-      "id": 6,
-      "workerId": 1,
-      "workerName": "Raju Sharma",
-      "date": "2026-03-24",
-      "present": true,
-      "projectId": 0,
-      "projectName": "",
-      "notes": ""
-    },
-    {
-      "id": 7,
-      "workerId": 1,
-      "workerName": "Raju Sharma",
-      "date": "2026-03-26",
-      "present": true,
-      "projectId": 0,
-      "projectName": "",
-      "notes": ""
-    },
-    {
-      "id": 8,
-      "workerId": 1,
-      "workerName": "Raju Sharma",
-      "date": "2026-03-27",
-      "present": true,
-      "projectId": 0,
-      "projectName": "",
-      "notes": ""
-    },
-    {
-      "id": 9,
-      "workerId": 1,
-      "workerName": "Raju Sharma",
-      "date": "2026-03-16",
-      "present": false,
-      "projectId": 0,
-      "projectName": "",
-      "notes": ""
-    },
-    {
-      "id": 10,
-      "workerId": 1,
-      "workerName": "Raju Sharma",
-      "date": "2026-03-17",
-      "present": false,
-      "projectId": 0,
-      "projectName": "",
-      "notes": ""
-    },
-    {
-      "id": 11,
-      "workerId": 1,
-      "workerName": "Raju Sharma",
-      "date": "2026-03-18",
-      "present": false,
-      "projectId": 0,
-      "projectName": "",
-      "notes": ""
-    },
-    {
-      "id": 12,
-      "workerId": 1,
-      "workerName": "Raju Sharma",
-      "date": "2026-04-04",
-      "present": true,
-      "projectId": 1,
-      "projectName": "S.R. Associates Site",
-      "notes": ""
-    }
-  ],
-  "payments": [
-    {
-      "id": 1,
-      "workerId": 1,
-      "workerName": "Raju Sharma",
-      "amount": 2400,
-      "weekStart": "2026-03-30",
-      "weekEnd": "2026-04-05",
-      "paidDate": "2026-04-03",
-      "daysWorked": 3,
-      "notes": ""
-    },
-    {
-      "id": 3,
-      "workerId": 1,
-      "workerName": "Raju Sharma",
-      "amount": 4000,
-      "weekStart": "2026-03-23",
-      "weekEnd": "2026-03-27",
-      "paidDate": "2026-03-28",
-      "daysWorked": 5,
-      "notes": ""
-    }
-  ],
   "settings": {
     "companyName": "CMM Electricals",
     "companyAddress": "Doddapet Road, Davanagere, Karnataka 577001",
@@ -262,35 +40,5 @@
     "defaultDailyRate": 600,
     "currency": "INR",
     "reportFooter": "Confidential — CMM Electricals"
-  },
-  "clientPayments": [
-    {
-      "id": 1,
-      "projectId": 1,
-      "projectName": "S.R. Associates Site",
-      "amount": 75000,
-      "paymentDate": "2026-04-04",
-      "invoiceNo": "INV-2026-001",
-      "notes": "First instalment"
-    }
-  ],
-  "directPurchases": [],
-  "users": [
-    {
-      "id": "chrisvivek.t@gmail.com",
-      "email": "chrisvivek.t@gmail.com",
-      "name": "Chris Vivek T",
-      "image": "https://lh3.googleusercontent.com/a/ACg8ocJfir-nYDrosdGAnEHQWfHOh5d9J6I34MqU3Rcym7leUbfwkbXm=s96-c",
-      "role": "ADMIN",
-      "createdAt": "2026-04-06T17:50:11.419Z"
-    },
-    {
-      "id": "abcde821721@gmail.com",
-      "email": "abcde821721@gmail.com",
-      "name": "Abc De",
-      "image": "https://lh3.googleusercontent.com/a/ACg8ocItHo7BV6aWiEutFRuDf4wH_bBvVGBx2pBj4lc58TWx-Dk_Tw=s96-c",
-      "role": "PENDING",
-      "createdAt": "2026-04-06T17:54:37.951Z"
-    }
-  ]
+  }
 }

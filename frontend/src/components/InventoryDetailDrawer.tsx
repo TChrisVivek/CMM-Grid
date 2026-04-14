@@ -13,7 +13,7 @@ import {
   IndianRupee, BarChart3, Calendar, Hash,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Product, Allocation } from "@/lib/store";
+import type { Product, Allocation } from "@/lib/types";
 
 interface DrawerProps {
   product: Product | null;

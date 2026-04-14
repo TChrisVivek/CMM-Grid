@@ -2,7 +2,7 @@
 -- CMM Electricals Inventory Management System
 
 -- Products (SKU master list)
-CREATE TABLE products (
+CREATE TABLE IF NOT EXISTS products (
   id                  SERIAL PRIMARY KEY,
   sku                 VARCHAR(50) UNIQUE NOT NULL,
   name                VARCHAR(255) NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE products (
 );
 
 -- Projects (site records)
-CREATE TABLE projects (
+CREATE TABLE IF NOT EXISTS projects (
   id           SERIAL PRIMARY KEY,
   name         VARCHAR(255) NOT NULL,
   site_address TEXT,
@@ -29,7 +29,7 @@ CREATE TABLE projects (
 );
 
 -- Allocations (warehouse → site movements)
-CREATE TABLE allocations (
+CREATE TABLE IF NOT EXISTS allocations (
   id              SERIAL PRIMARY KEY,
   product_id      INTEGER NOT NULL REFERENCES products(id) ON DELETE RESTRICT,
   project_id      INTEGER NOT NULL REFERENCES projects(id) ON DELETE RESTRICT,
@@ -40,7 +40,7 @@ CREATE TABLE allocations (
 );
 
 -- Usages (On-site consumption)
-CREATE TABLE usages (
+CREATE TABLE IF NOT EXISTS usages (
   id              SERIAL PRIMARY KEY,
   product_id      INTEGER NOT NULL REFERENCES products(id) ON DELETE RESTRICT,
   project_id      INTEGER NOT NULL REFERENCES projects(id) ON DELETE RESTRICT,
@@ -51,7 +51,7 @@ CREATE TABLE usages (
 );
 
 -- Workers (Labour master list)
-CREATE TABLE workers (
+CREATE TABLE IF NOT EXISTS workers (
   id           SERIAL PRIMARY KEY,
   name         VARCHAR(255) NOT NULL,
   phone        VARCHAR(20),
@@ -62,7 +62,7 @@ CREATE TABLE workers (
 );
 
 -- Assignments (Worker to project site)
-CREATE TABLE assignments (
+CREATE TABLE IF NOT EXISTS assignments (
   id           SERIAL PRIMARY KEY,
   worker_id    INTEGER NOT NULL REFERENCES workers(id) ON DELETE CASCADE,
   project_id   INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
@@ -73,7 +73,7 @@ CREATE TABLE assignments (
 );
 
 -- Attendance (Daily records)
-CREATE TABLE attendance (
+CREATE TABLE IF NOT EXISTS attendance (
   id           SERIAL PRIMARY KEY,
   worker_id    INTEGER NOT NULL REFERENCES workers(id) ON DELETE CASCADE,
   project_id   INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
@@ -85,7 +85,7 @@ CREATE TABLE attendance (
 );
 
 -- Payments (Salary/Wage records)
-CREATE TABLE payments (
+CREATE TABLE IF NOT EXISTS payments (
   id               SERIAL PRIMARY KEY,
   worker_id        INTEGER NOT NULL REFERENCES workers(id) ON DELETE CASCADE,
   amount           DECIMAL(10, 2) NOT NULL,
@@ -102,7 +102,7 @@ CREATE TABLE payments (
 );
 
 -- Client Payments (Receivables)
-CREATE TABLE client_payments (
+CREATE TABLE IF NOT EXISTS client_payments (
   id           SERIAL PRIMARY KEY,
   project_id   INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
   amount       DECIMAL(12, 2) NOT NULL,
@@ -114,7 +114,7 @@ CREATE TABLE client_payments (
 );
 
 -- Direct Purchases (Project-specific expenses)
-CREATE TABLE direct_purchases (
+CREATE TABLE IF NOT EXISTS direct_purchases (
   id           SERIAL PRIMARY KEY,
   project_id   INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
   description  TEXT NOT NULL,
@@ -127,7 +127,7 @@ CREATE TABLE direct_purchases (
 );
 
 -- System Users (Access Control)
-CREATE TABLE system_users (
+CREATE TABLE IF NOT EXISTS system_users (
   id           VARCHAR(255) PRIMARY KEY, -- Email used as ID
   email        VARCHAR(255) UNIQUE NOT NULL,
   name         VARCHAR(255),
@@ -138,7 +138,7 @@ CREATE TABLE system_users (
 );
 
 -- Settings (Company-wide configuration)
-CREATE TABLE settings (
+CREATE TABLE IF NOT EXISTS settings (
   id           INTEGER PRIMARY KEY CHECK (id = 1), -- Singleton table
   company_name VARCHAR(255) DEFAULT 'CMM Electricals',
   company_address TEXT,
@@ -155,12 +155,12 @@ CREATE TABLE settings (
 INSERT INTO settings (id) VALUES (1) ON CONFLICT DO NOTHING;
 
 -- Indexes
-CREATE INDEX idx_allocations_product    ON allocations(product_id);
-CREATE INDEX idx_allocations_project    ON allocations(project_id);
-CREATE INDEX idx_usages_product         ON usages(product_id);
-CREATE INDEX idx_usages_project         ON usages(project_id);
-CREATE INDEX idx_attendance_worker      ON attendance(worker_id);
-CREATE INDEX idx_attendance_date        ON attendance(date);
-CREATE INDEX idx_payments_worker        ON payments(worker_id);
-CREATE INDEX idx_client_payments_proj   ON client_payments(project_id);
-CREATE INDEX idx_direct_purchases_proj  ON direct_purchases(project_id);
+CREATE INDEX IF NOT EXISTS idx_allocations_product    ON allocations(product_id);
+CREATE INDEX IF NOT EXISTS idx_allocations_project    ON allocations(project_id);
+CREATE INDEX IF NOT EXISTS idx_usages_product         ON usages(product_id);
+CREATE INDEX IF NOT EXISTS idx_usages_project         ON usages(project_id);
+CREATE INDEX IF NOT EXISTS idx_attendance_worker      ON attendance(worker_id);
+CREATE INDEX IF NOT EXISTS idx_attendance_date        ON attendance(date);
+CREATE INDEX IF NOT EXISTS idx_payments_worker        ON payments(worker_id);
+CREATE INDEX IF NOT EXISTS idx_client_payments_proj   ON client_payments(project_id);
+CREATE INDEX IF NOT EXISTS idx_direct_purchases_proj  ON direct_purchases(project_id);

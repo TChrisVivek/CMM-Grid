@@ -24,7 +24,7 @@ import {
   queueCount,
   type SyncResult,
 } from "@/lib/offlineQueue";
-import { Wifi, WifiOff, RefreshCw, CheckCircle2, AlertCircle } from "lucide-react";
+import { WifiOff, RefreshCw, CheckCircle2, AlertCircle } from "lucide-react";
 
 interface OfflineCtx {
   isOnline: boolean;

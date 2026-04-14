@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   IndianRupee, TrendingUp, TrendingDown, Package, Users,
-  Plus, Trash2, X, CheckCircle, ChevronDown, ChevronUp,
+  Plus, Trash2, X, ChevronDown, ChevronUp,
   BarChart3, Loader2, RefreshCw, FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -52,9 +52,9 @@ export default function BudgetPage() {
   // Modal state
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentSaving, setPaymentSaving] = useState(false);
-  const [paymentForm, setPaymentForm] = useState({ 
-    projectId: 0, amount: "", paymentDate: new Date().toISOString().split("T")[0], 
-    invoiceNo: "", notes: "" 
+  const [paymentForm, setPaymentForm] = useState({
+    projectId: 0, amount: "", paymentDate: new Date().toISOString().split("T")[0],
+    invoiceNo: "", notes: ""
   });
   const [billFile, setBillFile] = useState<File | null>(null);
 
@@ -81,13 +81,14 @@ export default function BudgetPage() {
       if (billFile) {
         const formData = new FormData();
         formData.append("file", billFile);
+        formData.append("bucket", "bills");
         const upRes = await fetch("/api/upload", { method: "POST", body: formData });
         if (!upRes.ok) throw new Error("Upload failed");
         const upData = await upRes.json();
         billUrl = upData.url;
       }
 
-      const res = await fetch("/api/client-payments", {
+      const res = await fetch("/api/budget/client-payments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...paymentForm, amount: Number(paymentForm.amount), billUrl }),
@@ -104,7 +105,7 @@ export default function BudgetPage() {
 
   async function handleDeletePayment(id: number) {
     if (!(await confirmAction("Delete this payment record?"))) return;
-    await fetch(`/api/client-payments?id=${id}`, { method: "DELETE" });
+    await fetch(`/api/budget/client-payments/${id}`, { method: "DELETE" });
     load();
   }
 
@@ -120,7 +121,7 @@ export default function BudgetPage() {
   );
 
   const profitColor = (v: number) => v >= 0 ? "text-emerald-600" : "text-red-600";
-  const profitBg   = (v: number) => v >= 0 ? "bg-emerald-50 border-emerald-200" : "bg-red-50 border-red-200";
+  const profitBg = (v: number) => v >= 0 ? "bg-emerald-50 border-emerald-200" : "bg-red-50 border-red-200";
 
   // ── Render ──
   return (

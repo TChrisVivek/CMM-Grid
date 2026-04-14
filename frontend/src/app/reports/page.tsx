@@ -41,21 +41,21 @@ const S = {
   // Company header
   company: { font: { bold: true, sz: 14, color: { rgb: "FFFFFF" }, name: "Calibri" }, fill: { fgColor: { rgb: "1B2B4B" } }, alignment: { horizontal: "center", vertical: "center" } },
   // Report title row
-  title:   { font: { bold: true, sz: 11, color: { rgb: "FFFFFF" }, name: "Calibri" }, fill: { fgColor: { rgb: "2D4F82" } }, alignment: { horizontal: "left", vertical: "center" } },
+  title: { font: { bold: true, sz: 11, color: { rgb: "FFFFFF" }, name: "Calibri" }, fill: { fgColor: { rgb: "2D4F82" } }, alignment: { horizontal: "left", vertical: "center" } },
   // Column header
-  header:  { font: { bold: true, sz: 10, color: { rgb: "FFFFFF" }, name: "Calibri" }, fill: { fgColor: { rgb: "1F4E79" } }, alignment: { horizontal: "center", vertical: "center" }, border: { top: { style: "thin", color: { rgb: "AAAAAA" } }, bottom: { style: "medium", color: { rgb: "4472C4" } }, left: { style: "thin", color: { rgb: "AAAAAA" } }, right: { style: "thin", color: { rgb: "AAAAAA" } } } },
+  header: { font: { bold: true, sz: 10, color: { rgb: "FFFFFF" }, name: "Calibri" }, fill: { fgColor: { rgb: "1F4E79" } }, alignment: { horizontal: "center", vertical: "center" }, border: { top: { style: "thin", color: { rgb: "AAAAAA" } }, bottom: { style: "medium", color: { rgb: "4472C4" } }, left: { style: "thin", color: { rgb: "AAAAAA" } }, right: { style: "thin", color: { rgb: "AAAAAA" } } } },
   // Even data row
-  row0:    { font: { sz: 10, name: "Calibri" }, fill: { fgColor: { rgb: "FFFFFF" } }, border: { top: { style: "hair", color: { rgb: "CCCCCC" } }, bottom: { style: "hair", color: { rgb: "CCCCCC" } }, left: { style: "thin", color: { rgb: "DDDDDD" } }, right: { style: "thin", color: { rgb: "DDDDDD" } } }, alignment: { vertical: "center" } },
+  row0: { font: { sz: 10, name: "Calibri" }, fill: { fgColor: { rgb: "FFFFFF" } }, border: { top: { style: "hair", color: { rgb: "CCCCCC" } }, bottom: { style: "hair", color: { rgb: "CCCCCC" } }, left: { style: "thin", color: { rgb: "DDDDDD" } }, right: { style: "thin", color: { rgb: "DDDDDD" } } }, alignment: { vertical: "center" } },
   // Odd data row
-  row1:    { font: { sz: 10, name: "Calibri" }, fill: { fgColor: { rgb: "EEF4FB" } }, border: { top: { style: "hair", color: { rgb: "CCCCCC" } }, bottom: { style: "hair", color: { rgb: "CCCCCC" } }, left: { style: "thin", color: { rgb: "DDDDDD" } }, right: { style: "thin", color: { rgb: "DDDDDD" } } }, alignment: { vertical: "center" } },
+  row1: { font: { sz: 10, name: "Calibri" }, fill: { fgColor: { rgb: "EEF4FB" } }, border: { top: { style: "hair", color: { rgb: "CCCCCC" } }, bottom: { style: "hair", color: { rgb: "CCCCCC" } }, left: { style: "thin", color: { rgb: "DDDDDD" } }, right: { style: "thin", color: { rgb: "DDDDDD" } } }, alignment: { vertical: "center" } },
   // Total / footer row
-  total:   { font: { bold: true, sz: 10, color: { rgb: "1B2B4B" }, name: "Calibri" }, fill: { fgColor: { rgb: "D9E8F8" } }, border: { top: { style: "medium", color: { rgb: "4472C4" } }, bottom: { style: "medium", color: { rgb: "4472C4" } }, left: { style: "thin", color: { rgb: "DDDDDD" } }, right: { style: "thin", color: { rgb: "DDDDDD" } } }, alignment: { vertical: "center" } },
+  total: { font: { bold: true, sz: 10, color: { rgb: "1B2B4B" }, name: "Calibri" }, fill: { fgColor: { rgb: "D9E8F8" } }, border: { top: { style: "medium", color: { rgb: "4472C4" } }, bottom: { style: "medium", color: { rgb: "4472C4" } }, left: { style: "thin", color: { rgb: "DDDDDD" } }, right: { style: "thin", color: { rgb: "DDDDDD" } } }, alignment: { vertical: "center" } },
   // Status: OK
-  ok:      { font: { bold: true, sz: 10, color: { rgb: "1A7A40" }, name: "Calibri" }, fill: { fgColor: { rgb: "D6F0E0" } } },
+  ok: { font: { bold: true, sz: 10, color: { rgb: "1A7A40" }, name: "Calibri" }, fill: { fgColor: { rgb: "D6F0E0" } } },
   // Status: Low Stock
-  low:     { font: { bold: true, sz: 10, color: { rgb: "7A5200" }, name: "Calibri" }, fill: { fgColor: { rgb: "FFF3CD" } } },
+  low: { font: { bold: true, sz: 10, color: { rgb: "7A5200" }, name: "Calibri" }, fill: { fgColor: { rgb: "FFF3CD" } } },
   // Status: Out of Stock
-  out:     { font: { bold: true, sz: 10, color: { rgb: "7A1A1A" }, name: "Calibri" }, fill: { fgColor: { rgb: "FFE0E0" } } },
+  out: { font: { bold: true, sz: 10, color: { rgb: "7A1A1A" }, name: "Calibri" }, fill: { fgColor: { rgb: "FFE0E0" } } },
 };
 
 type CellStyle = typeof S.row0;
@@ -428,7 +428,7 @@ export default function ReportsPage() {
                         <span className="text-xs text-text-primary flex-1 truncate">{p.name}</span>
                         <span className={cn("text-xs font-semibold tabular-nums flex-shrink-0",
                           p.warehouseQty <= 0 ? "text-danger" :
-                          p.warehouseQty <= p.lowStockThreshold ? "text-warning" : "text-success"
+                            p.warehouseQty <= p.lowStockThreshold ? "text-warning" : "text-success"
                         )}>{p.warehouseQty} {p.unit}</span>
                       </div>
                     ))}

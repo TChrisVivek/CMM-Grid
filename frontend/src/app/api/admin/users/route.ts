@@ -2,11 +2,15 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/authOptions";
+
+interface SessionWithRole {
+  user?: { name?: string | null; email?: string | null; image?: string | null; role?: string };
+}
 
 export async function GET() {
   const session = await getServerSession(authOptions);
-  if ((session as any)?.user?.role !== "ADMIN") {
+  if ((session as SessionWithRole)?.user?.role !== "ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -24,7 +28,7 @@ export async function GET() {
 
 export async function PATCH(req: Request) {
   const session = await getServerSession(authOptions);
-  if ((session as any)?.user?.role !== "ADMIN") {
+  if ((session as SessionWithRole)?.user?.role !== "ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -58,7 +62,8 @@ export async function PATCH(req: Request) {
     }
 
     return NextResponse.json({ success: true, user: data });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

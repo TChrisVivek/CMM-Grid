@@ -4,7 +4,7 @@
  */
 import axios from "axios";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -72,7 +72,7 @@ export const allocationApi = {
   getAll: () => api.get<Allocation[]>("/api/allocations"),
   create: (data: { productId: number; projectId: number; quantity: number; allocatedDate: string; notes?: string }) =>
     api.post<Allocation>("/api/allocations", data),
-  batchCreate: (allocations: Parameters<typeof allocationApi.create>[0][]) =>
+  batchCreate: (allocations: { productId: number; projectId: number; quantity: number; allocatedDate: string; notes?: string }[]) =>
     api.post<Allocation[]>("/api/allocations/batch", allocations),
 };
 

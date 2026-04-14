@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { Search, ArrowUpDown, AlertTriangle, ChevronUp, ChevronDown, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Product } from "@/lib/store";
+import type { Product } from "@/lib/types";
 
 interface StockTableProps {
   products: Product[];
@@ -21,8 +21,10 @@ export function StockTable({ products, isLoading = false, onDelete, onRowClick }
   const [sortDir, setSortDir] = useState<SortDir>("asc");
   const [showLowStockOnly, setShowLowStockOnly] = useState(false);
 
+  const productsSafe = useMemo(() => Array.isArray(products) ? products : [], [products]);
+
   const filtered = useMemo(() => {
-    let data = [...products];
+    let data = [...productsSafe];
     if (search) {
       const q = search.toLowerCase();
       data = data.filter(
@@ -39,7 +41,7 @@ export function StockTable({ products, isLoading = false, onDelete, onRowClick }
       return sortDir === "asc" ? cmp : -cmp;
     });
     return data;
-  }, [products, search, sortKey, sortDir, showLowStockOnly]);
+  }, [productsSafe, search, sortKey, sortDir, showLowStockOnly]);
 
   const toggleSort = (key: SortKey) => {
     if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -61,7 +63,7 @@ export function StockTable({ products, isLoading = false, onDelete, onRowClick }
     </button>
   );
 
-  const lowStockCount = products.filter((p) => p.warehouseQty <= p.lowStockThreshold).length;
+  const lowStockCount = productsSafe.filter((p) => p.warehouseQty <= p.lowStockThreshold).length;
 
   return (
     <div className="glass rounded-2xl overflow-hidden shadow-card animate-fade-in">

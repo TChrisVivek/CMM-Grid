@@ -6,23 +6,24 @@ import { signOut } from "next-auth/react";
 import {
   LayoutDashboard, Package, FolderKanban, ArrowLeftRight,
   BarChart3, Settings, Zap, Menu, X, Users, Wallet,
-  ShieldAlert, LogOut,
+  LogOut,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useOffline } from "@/components/OfflineProvider";
 
 const navItems = [
-  { href: "/",            icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/inventory",   icon: Package,         label: "Inventory" },
-  { href: "/projects",    icon: FolderKanban,    label: "Projects" },
-  { href: "/allocations", icon: ArrowLeftRight,  label: "Allocations" },
-  { href: "/labour",      icon: Users,           label: "Labour" },
-  { href: "/budget",      icon: Wallet,          label: "Budget" },
-  { href: "/reports",     icon: BarChart3,       label: "Reports" },
-  { href: "/settings",    icon: Settings,        label: "Settings" },
+  { href: "/", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/inventory", icon: Package, label: "Inventory" },
+  { href: "/projects", icon: FolderKanban, label: "Projects" },
+  { href: "/allocations", icon: ArrowLeftRight, label: "Allocations" },
+  { href: "/labour", icon: Users, label: "Labour" },
+  { href: "/budget", icon: Wallet, label: "Budget" },
+  { href: "/reports", icon: BarChart3, label: "Reports" },
+  { href: "/settings", icon: Settings, label: "Settings" },
 ];
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -117,7 +118,7 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
               onClick={async () => {
                 if ('serviceWorker' in navigator) {
                   const regs = await navigator.serviceWorker.getRegistrations();
-                  for (let r of regs) await r.unregister();
+                  for (const r of regs) await r.unregister();
                 }
                 await signOut({ redirect: false });
                 window.location.href = "/?t=" + Date.now();

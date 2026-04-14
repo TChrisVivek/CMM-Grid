@@ -6,22 +6,30 @@
 
 /* ─── CSS Custom Properties ─────────────────────────────────────── */
 :root {
-  --background:        #f1f5f9;
-  --foreground:        #0f172a;
-  --surface:           #ffffff;
-  --border:            #e2e8f0;
-  --border-strong:     #cbd5e1;
-  --blue:              #2563eb;
-  --blue-light:        #dbeafe;
-  --glass-bg:          rgba(255, 255, 255, 0.85);
-  --glass-border:      rgba(226, 232, 240, 1);
-  --card-shadow:       0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
-  --sidebar-width:     256px;
+  --background: #f1f5f9;
+  --foreground: #0f172a;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --blue: #2563eb;
+  --blue-light: #dbeafe;
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(226, 232, 240, 1);
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  --sidebar-width: 256px;
 }
 
 /* ─── Reset & Base ───────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; font-size: 15px; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 15px;
+}
 
 body {
   color: var(--foreground);
@@ -36,22 +44,41 @@ body {
 }
 
 /* ─── Scrollbar ───────────────────────────────────────────────────── */
-::-webkit-scrollbar          { width: 5px; height: 5px; }
-::-webkit-scrollbar-track    { background: transparent; }
-::-webkit-scrollbar-thumb    { background: #cbd5e1; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
 
 /* ─── Selection ───────────────────────────────────────────────────── */
-::selection { background: rgba(37,99,235,0.15); color: #0f172a; }
+::selection {
+  background: rgba(37, 99, 235, 0.15);
+  color: #0f172a;
+}
 
 /* ─── Focus ring ─────────────────────────────────────────────────── */
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
   outline: none;
   border-color: #2563eb !important;
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.12) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
 }
+
 button:focus-visible {
-  outline: 2px solid rgba(37,99,235,0.5);
+  outline: 2px solid rgba(37, 99, 235, 0.5);
   outline-offset: 2px;
 }
 
@@ -68,16 +95,17 @@ button:focus-visible {
   .glass-hover {
     transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
   }
+
   .glass-hover:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.08), 0 0 0 1px rgba(37,99,235,0.15);
-    border-color: rgba(37,99,235,0.2) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 8px 32px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(37, 99, 235, 0.15);
+    border-color: rgba(37, 99, 235, 0.2) !important;
   }
 
   /* Elevated surface */
   .card-elevated {
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 4px 20px rgba(0,0,0,0.06);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 20px rgba(0, 0, 0, 0.06);
   }
 
   /* Inner inset surface */
@@ -86,7 +114,9 @@ button:focus-visible {
     border: 1px solid #e2e8f0;
   }
 
-  .text-balance { text-wrap: balance; }
+  .text-balance {
+    text-wrap: balance;
+  }
 
   /* Accent gradient text — blue/indigo for light theme */
   .text-gradient-cyan {
@@ -98,8 +128,13 @@ button:focus-visible {
 }
 
 /* ─── Table row hover ─────────────────────────────────────────────── */
-.table-row-hover { transition: background 0.12s ease; }
-.table-row-hover:hover { background: rgba(37,99,235,0.03); }
+.table-row-hover {
+  transition: background 0.12s ease;
+}
+
+.table-row-hover:hover {
+  background: rgba(37, 99, 235, 0.03);
+}
 
 /* ─── Subtle dot grid background ─────────────────────────────────── */
 .grid-bg {
@@ -122,11 +157,13 @@ button:focus-visible {
   border: 1px solid transparent;
   text-decoration: none;
 }
+
 .sidebar-item:hover {
   color: #0f172a;
   background: #f1f5f9;
   border-color: #e2e8f0;
 }
+
 .sidebar-item.active {
   color: #2563eb;
   background: #eff6ff;
@@ -137,7 +174,9 @@ button:focus-visible {
 /* ─── Metric card accent bar ─────────────────────────────────────── */
 .metric-accent-bar {
   position: absolute;
-  left: 0; top: 14px; bottom: 14px;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
   width: 3px;
   border-radius: 0 3px 3px 0;
 }
@@ -181,15 +220,17 @@ button:focus-visible {
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   pointer-events: none;
 }
+
 .offline-banner--visible {
   transform: translateY(0);
   pointer-events: auto;
 }
+
 .offline-banner__badge {
   margin-left: 8px;
   padding: 1px 8px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.25);
+  background: rgba(255, 255, 255, 0.25);
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -211,28 +252,46 @@ button:focus-visible {
   color: #0f172a;
   background: #fff;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10), 0 1px 4px rgba(0, 0, 0, 0.06);
   animation: toast-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   max-width: 340px;
 }
+
 @keyframes toast-in {
-  from { opacity: 0; transform: translateY(12px) scale(0.96); }
-  to   { opacity: 1; transform: translateY(0)   scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
+
 .sync-toast__icon {
   flex-shrink: 0;
 }
+
 .sync-toast__icon--spin {
   color: #2563eb;
   animation: spin 1s linear infinite;
 }
+
 .sync-toast__icon--success {
   color: #16a34a;
 }
+
 .sync-toast__icon--error {
   color: #dc2626;
 }
+
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }

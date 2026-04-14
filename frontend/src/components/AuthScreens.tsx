@@ -1,7 +1,7 @@
 "use client";
 
 import { signIn, signOut } from "next-auth/react";
-import { Loader2, ShieldAlert, Ban, Zap, ArrowRight } from "lucide-react";
+import { ShieldAlert, Ban, Zap, ArrowRight } from "lucide-react";
 
 export function LoginScreen() {
   return (
@@ -9,7 +9,7 @@ export function LoginScreen() {
       {/* Left Hemisphere: Branding & Graphic */}
       <div className="hidden lg:flex flex-col justify-between w-1/2 p-12 relative overflow-hidden backdrop-blur-3xl">
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/40 via-[#030712] to-blue-900/40 z-0" />
-        
+
         {/* Dynamic Electrical/Grid background effect */}
         <div className="absolute inset-0 z-0 opacity-10 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_40%,#000_10%,transparent_100%)]" />
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/10 blur-[120px] rounded-full pointer-events-none" />
@@ -118,7 +118,7 @@ export function PendingScreen() {
         <div className="w-20 h-20 mx-auto bg-amber-500/[0.05] rounded-2xl flex items-center justify-center border border-amber-500/20 shadow-inner mb-8">
           <ShieldAlert size={36} className="text-amber-400" strokeWidth={1.5} />
         </div>
-        
+
         <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-slate-400 mb-3 tracking-tight">Access Pending</h1>
         <p className="text-slate-400 mb-10 text-sm leading-relaxed">
           Your account has been securely verified by Google, but you require manual clearance from an Administrator before you can enter the grid.
@@ -128,7 +128,7 @@ export function PendingScreen() {
           onClick={async () => {
             if ('serviceWorker' in navigator) {
               const regs = await navigator.serviceWorker.getRegistrations();
-              for (let r of regs) await r.unregister();
+              for (const r of regs) await r.unregister();
             }
             await signOut({ redirect: false });
             window.location.href = "/?t=" + Date.now();
@@ -152,7 +152,7 @@ export function BlockedScreen() {
         <div className="w-20 h-20 mx-auto bg-red-500/[0.05] rounded-2xl flex items-center justify-center border border-red-500/20 shadow-inner mb-8">
           <Ban size={36} className="text-red-400" strokeWidth={1.5} />
         </div>
-        
+
         <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-red-100 to-red-400 mb-3 tracking-tight">Access Denied</h1>
         <p className="text-red-200/60 mb-10 text-sm leading-relaxed">
           Your clearance to the CMM System has been explicitly revoked or blocked by Administration. Contact IT Support to dispute this status.
@@ -162,13 +162,13 @@ export function BlockedScreen() {
           onClick={async () => {
             if ('serviceWorker' in navigator) {
               const regs = await navigator.serviceWorker.getRegistrations();
-              for (let r of regs) await r.unregister();
+              for (const r of regs) await r.unregister();
             }
             signOut({ callbackUrl: "/" });
           }}
           className="w-full group px-6 py-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 hover:text-red-300 text-sm font-semibold transition-all flex items-center justify-center gap-2"
         >
-           Sign Out Securely
+          Sign Out Securely
         </button>
       </div>
     </ElegantBackground>

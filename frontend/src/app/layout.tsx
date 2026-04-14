@@ -5,8 +5,12 @@ import { OfflineProvider } from "@/components/OfflineProvider";
 import { ToastProvider } from "@/components/ToastProvider";
 import { AuthProvider } from "@/components/AuthProvider";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/authOptions";
 import { LoginScreen, PendingScreen, BlockedScreen } from "@/components/AuthScreens";
+
+interface SessionWithRole {
+  user?: { name?: string | null; email?: string | null; image?: string | null; role?: string };
+}
 
 export const metadata: Metadata = {
   title: "CMM Grid — Electrical Inventory",
@@ -26,21 +30,28 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="CMM Grid" />
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-        {/* Register/Update/Unregister Service Worker */}
+        {/* Service Worker — register on load. skipWaiting() in sw.js handles self-updates. */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               if ('serviceWorker' in navigator) {
-                // Force unregister all old service workers to fix cache issues
-                navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                  for(let registration of registrations) {
-                    registration.unregister();
-                  }
-                });
-                
-                // Then register the new one fresh
                 window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js').catch(function(err) {
+                  navigator.serviceWorker.register('/sw.js').then(function(reg) {
+                    // If a new SW is waiting, tell it to skip waiting and take control immediately
+                    if (reg.waiting) {
+                      reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                    }
+                    reg.addEventListener('updatefound', function() {
+                      var newSW = reg.installing;
+                      if (newSW) {
+                        newSW.addEventListener('statechange', function() {
+                          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+                            newSW.postMessage({ type: 'SKIP_WAITING' });
+                          }
+                        });
+                      }
+                    });
+                  }).catch(function(err) {
                     console.warn('SW registration failed:', err);
                   });
                 });
@@ -50,18 +61,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body className="bg-deep-space text-text-primary grid-bg antialiased">
-        <AuthProvider>
+        <AuthProvider session={session}>
           <ToastProvider />
           <OfflineProvider>
             {!session ? (
               <LoginScreen />
-            ) : (session as any).user?.role === "PENDING" ? (
+            ) : (session as SessionWithRole).user?.role === "PENDING" ? (
               <PendingScreen />
-            ) : (session as any).user?.role === "REJECTED" ? (
+            ) : (session as SessionWithRole).user?.role === "REJECTED" ? (
               <BlockedScreen />
             ) : (
               <div className="relative flex min-h-screen">
-                <Sidebar isAdmin={(session as any).user?.role === "ADMIN"} />
+                <Sidebar isAdmin={(session as SessionWithRole).user?.role === "ADMIN"} />
                 <main className="flex-1 lg:pl-64 min-h-screen">
                   <div className="max-w-[1400px] mx-auto px-5 sm:px-7 lg:px-10 py-8 pt-16 lg:pt-8">
                     {children}
