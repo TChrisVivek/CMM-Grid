@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useAutoRefresh } from "@/hooks/useAutoRefresh";
 import { StockTable } from "@/components/StockTable";
 import { InventoryDetailDrawer } from "@/components/InventoryDetailDrawer";
-import { Package, Plus, X, Loader2 } from "lucide-react";
+import { Plus, X, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { confirmAction } from "@/lib/confirmToast";
 import type { Product } from "@/lib/types";

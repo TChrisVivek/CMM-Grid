@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { 
-  LayoutDashboard, FolderKanban, 
+  FolderKanban, 
   AlertTriangle, BarChart3, TrendingUp,
   Clock, CheckCircle2, MoreVertical
 } from "lucide-react";

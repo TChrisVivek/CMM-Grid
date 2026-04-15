@@ -74,6 +74,7 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
         <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100 flex-shrink-0">
           <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 shadow-sm flex-shrink-0 overflow-hidden">
             {companyLogo ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img src={companyLogo} alt="Logo" className="w-full h-full object-contain p-0.5" />
             ) : (
               <Zap size={17} className="text-white" strokeWidth={2.5} />

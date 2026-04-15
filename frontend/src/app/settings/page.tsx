@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import {
-   Settings, Building2, SlidersHorizontal, FileText,
+   Building2, SlidersHorizontal, FileText,
    Database, Save, CheckCircle, Download, Loader2,
    AlertTriangle, RefreshCw, ChevronRight,
    ShieldAlert, UserCheck, UserX, Ban, RotateCcw,
@@ -231,7 +231,7 @@ export default function SettingsPage() {
                               {/* Preview */}
                               <div className="w-16 h-16 rounded-xl border border-glass-border bg-space-blue flex items-center justify-center flex-shrink-0 overflow-hidden">
                                  {settings.companyLogo ? (
-                                    <img src={settings.companyLogo} alt="Logo" className="w-full h-full object-contain p-1" />
+                                     <img src={settings.companyLogo} alt="Logo" className="w-full h-full object-contain p-1" />
                                  ) : (
                                     <span className="text-2xl text-text-secondary font-black">?</span>
                                  )}
