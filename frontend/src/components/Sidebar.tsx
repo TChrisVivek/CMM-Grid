@@ -8,7 +8,7 @@ import {
   BarChart3, Settings, Zap, Menu, X, Users, Wallet,
   LogOut,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useOffline } from "@/components/OfflineProvider";
 
@@ -28,8 +28,15 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { isOnline, pendingCount, mounted } = useOffline();
-  // Use effectiveOnline to avoid hydration mismatch (show green until mounted)
   const effectiveOnline = !mounted || isOnline;
+  const [companyLogo, setCompanyLogo] = useState<string>("");
+
+  useEffect(() => {
+    fetch("/api/settings", { cache: "no-store" })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data?.companyLogo) setCompanyLogo(data.companyLogo); })
+      .catch(() => {});
+  }, []);
 
   return (
     <>
@@ -65,19 +72,16 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
 
         {/* Logo */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100 flex-shrink-0">
-          <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 shadow-sm flex-shrink-0">
-            <Zap size={17} className="text-white" strokeWidth={2.5} />
+          <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 shadow-sm flex-shrink-0 overflow-hidden">
+            {companyLogo ? (
+              <img src={companyLogo} alt="Logo" className="w-full h-full object-contain p-0.5" />
+            ) : (
+              <Zap size={17} className="text-white" strokeWidth={2.5} />
+            )}
           </div>
           <div className="min-w-0">
             <p className="font-bold text-sm text-gray-900 tracking-tight leading-none">CMM Grid</p>
             <p className="text-[10px] text-gray-400 font-mono uppercase tracking-widest mt-0.5">Electricals</p>
-          </div>
-          {/* Live dot */}
-          <div className="ml-auto flex-shrink-0 relative">
-            <span className="flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-emerald-400 opacity-60" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-            </span>
           </div>
         </div>
 
@@ -89,25 +93,24 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
         {/* Nav items */}
         <nav className="flex-1 overflow-y-auto px-3 pb-4 space-y-0.5">
           {navItems.map(({ href, icon: Icon, label }) => {
-            const isActive = pathname === href;
+            const isActive = pathname === href || (href !== "/" && pathname.startsWith(href));
             return (
               <Link
                 key={href}
                 href={href}
                 onClick={() => setIsMobileOpen(false)}
+                suppressHydrationWarning
                 className={cn("sidebar-item group", isActive && "active")}
               >
                 <Icon
                   size={16}
+                  suppressHydrationWarning
                   className={cn(
                     "flex-shrink-0 transition-colors",
                     isActive ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600"
                   )}
                 />
                 <span className="flex-1 truncate">{label}</span>
-                {isActive && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 flex-shrink-0" />
-                )}
               </Link>
             );
           })}
@@ -130,24 +133,12 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
           </div>
         </nav>
 
-        {/* Footer — live online/offline status */}
+        {/* Footer — status */}
         <div className={cn(
           "flex-shrink-0 mx-3 mb-4 p-3 rounded-xl border transition-colors duration-300",
           effectiveOnline ? "bg-gray-50 border-gray-100" : "bg-amber-50 border-amber-200"
         )}>
           <div className="flex items-center gap-2.5">
-            <div className="relative flex-shrink-0">
-              <span className="flex h-2 w-2">
-                {effectiveOnline ? (
-                  <>
-                    <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-emerald-400 opacity-50" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                  </>
-                ) : (
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
-                )}
-              </span>
-            </div>
             <div className="min-w-0 flex-1">
               <p className={cn(
                 "text-[11px] font-semibold",
@@ -155,7 +146,6 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
               )}>
                 {effectiveOnline ? "System Online" : "Offline Mode"}
               </p>
-              <p className="text-[10px] text-gray-400 font-mono uppercase tracking-widest">EOD Mode</p>
             </div>
             {!effectiveOnline && pendingCount > 0 && (
               <span className="flex-shrink-0 text-[10px] font-bold bg-amber-500 text-white px-1.5 py-0.5 rounded-full">

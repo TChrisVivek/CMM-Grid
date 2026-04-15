@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useAutoRefresh } from "@/hooks/useAutoRefresh";
 import { useParams, useRouter } from "next/navigation";
 import {
    ArrowLeft, MapPin, Calendar, Package, ArrowLeftRight,
@@ -122,6 +123,7 @@ export default function ProjectDetailPage() {
    }, [id]);
 
    useEffect(() => { load(); }, [load]);
+   useAutoRefresh(load);
 
    async function handleUsageSubmit(e: React.FormEvent) {
       e.preventDefault();

@@ -259,11 +259,15 @@ export default function WorkerDetailPage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ date, present: newPresent }),
          });
-         if (res.ok) toast.success(`Attendance marked ${newPresent === null ? 'cleared' : (newPresent ? 'present' : 'absent')}`);
-         else toast.error("Failed to mark attendance");
+         if (res.ok) {
+            const label = newPresent === null ? "cleared" : newPresent ? "present" : "absent";
+            toast.success(`Attendance marked ${label}`, { id: "attendance-toast" });
+         } else {
+            toast.error("Failed to mark attendance", { id: "attendance-toast" });
+         }
          await load();
       } catch {
-         toast.error("Network error marking attendance");
+         toast.error("Network error marking attendance", { id: "attendance-toast" });
       }
    }
 

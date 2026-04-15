@@ -25,6 +25,7 @@ interface AppSettings {
    defaultDailyRate: number;
    currency: string;
    reportFooter: string;
+   companyLogo: string;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -36,6 +37,7 @@ const DEFAULT_SETTINGS: AppSettings = {
    defaultDailyRate: 600,
    currency: "INR",
    reportFooter: "Confidential — CMM Electricals",
+   companyLogo: "",
 };
 
 const inputCls = "w-full px-3 py-2 text-sm rounded-lg bg-space-blue border border-glass-border text-text-primary focus:outline-none focus:border-cyan-glow/50 focus:ring-1 focus:ring-cyan-glow/20 transition-all placeholder:text-text-secondary/60";
@@ -155,12 +157,8 @@ export default function SettingsPage() {
          {/* Header */}
          <div className="flex items-end justify-between gap-4">
             <div>
-               <div className="flex items-center gap-2 mb-1">
-                  <Settings size={16} className="text-cyan-glow" />
-                  <span className="text-xs font-mono text-cyan-glow uppercase tracking-widest">System</span>
-               </div>
                <h1 className="text-2xl font-bold text-text-primary">Settings</h1>
-               <p className="text-text-secondary text-sm mt-1">Configure company details, defaults, and report preferences.</p>
+               <p className="text-text-secondary text-sm mt-1">Manage company details and application preferences.</p>
             </div>
             <div className="flex items-center gap-3">
                <button type="button" onClick={load} className="flex items-center gap-2 px-3 py-2 rounded-lg glass glass-hover text-text-secondary hover:text-text-primary text-xs transition-all">
@@ -226,6 +224,55 @@ export default function SettingsPage() {
                         </div>
                      </div>
                      <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        {/* Logo upload */}
+                        <div className="sm:col-span-2">
+                           <label className={labelCls}>Company Logo</label>
+                           <div className="flex items-center gap-4">
+                              {/* Preview */}
+                              <div className="w-16 h-16 rounded-xl border border-glass-border bg-space-blue flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                 {settings.companyLogo ? (
+                                    <img src={settings.companyLogo} alt="Logo" className="w-full h-full object-contain p-1" />
+                                 ) : (
+                                    <span className="text-2xl text-text-secondary font-black">?</span>
+                                 )}
+                              </div>
+                              {/* Upload button */}
+                              <div className="flex-1">
+                                 <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-space-blue border border-glass-border text-xs font-semibold text-text-secondary hover:text-text-primary hover:border-cyan-glow/40 transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    {settings.companyLogo ? "Change Logo" : "Upload Logo"}
+                                    <input
+                                       type="file"
+                                       accept="image/*"
+                                       className="hidden"
+                                       onChange={e => {
+                                          const file = e.target.files?.[0];
+                                          if (!file) return;
+                                          if (file.size > 500 * 1024) {
+                                             toast.error("Logo must be under 500 KB");
+                                             return;
+                                          }
+                                          const reader = new FileReader();
+                                          reader.onload = ev => {
+                                             setSettings(s => ({ ...s, companyLogo: ev.target?.result as string }));
+                                          };
+                                          reader.readAsDataURL(file);
+                                       }}
+                                    />
+                                 </label>
+                                 {settings.companyLogo && (
+                                    <button
+                                       type="button"
+                                       onClick={() => setSettings(s => ({ ...s, companyLogo: "" }))}
+                                       className="ml-2 text-xs text-danger hover:opacity-80 transition-opacity"
+                                    >
+                                       Remove
+                                    </button>
+                                 )}
+                                 <p className="text-[11px] text-text-secondary mt-1.5">PNG, JPG or SVG · Max 500 KB · Shown in the sidebar and reports</p>
+                              </div>
+                           </div>
+                        </div>
                         <div className="sm:col-span-2">
                            <label className={labelCls}>Company Name *</label>
                            <input
@@ -392,91 +439,160 @@ export default function SettingsPage() {
                {/* ── System Access ── */}
                {activeSection === "access" && isAdmin && (
                   <div className="glass rounded-2xl overflow-hidden border border-glass-border animate-fade-in">
+
+                     {/* Header */}
                      <div className="px-6 py-5 border-b border-glass-border flex items-center justify-between">
                         <div className="flex items-center gap-3">
                            <div className="p-2 rounded-xl bg-warning/10 border border-warning/20">
                               <ShieldAlert size={17} className="text-warning" />
                            </div>
                            <div>
-                              <h2 className="text-sm font-bold text-text-primary">System Access & Personnel</h2>
-                              <p className="text-xs text-text-secondary mt-0.5">Manage users and grant dashboard access</p>
+                              <h2 className="text-sm font-bold text-text-primary">System Access &amp; Personnel</h2>
+                              <p className="text-xs text-text-secondary mt-0.5">Approve, revoke, or block user access to the dashboard</p>
                            </div>
                         </div>
-                        <button type="button" onClick={loadUsers} className="p-2 rounded-lg bg-space-blue border border-glass-border hover:text-cyan-glow transition-all">
-                           <RefreshCw size={14} className={usersLoading ? "animate-spin" : ""} />
+                        <button
+                           type="button"
+                           onClick={loadUsers}
+                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-space-blue border border-glass-border text-xs text-text-secondary hover:text-cyan-glow transition-all"
+                        >
+                           <RefreshCw size={13} className={usersLoading ? "animate-spin" : ""} />
+                           Refresh
                         </button>
                      </div>
-                     <div className="p-0 overflow-x-auto">
-                        <table className="w-full text-left text-sm whitespace-nowrap">
-                           <thead className="bg-space-blue/30 text-text-secondary text-xs uppercase tracking-wider">
-                              <tr>
-                                 <th className="px-5 py-3 font-semibold">User</th>
-                                 <th className="px-5 py-3 font-semibold">Role</th>
-                                 <th className="px-5 py-3 font-semibold text-right">Actions</th>
-                              </tr>
-                           </thead>
-                           <tbody className="divide-y divide-glass-border/50">
-                              {users.map((u) => (
-                                 <tr key={u.email} className="table-row-hover">
-                                    <td className="px-5 py-3">
-                                       <div className="flex flex-col">
-                                          <span className="font-medium text-text-primary">{u.name}</span>
-                                          <span className="text-[11px] text-text-secondary font-mono mt-0.5">{u.email}</span>
-                                       </div>
-                                    </td>
-                                    <td className="px-5 py-3">
-                                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${u.role === "ADMIN" ? "bg-warning/20 text-warning border border-warning/30" :
-                                             u.role === "USER" ? "bg-success/20 text-success border border-success/30" :
-                                                "bg-danger/10 text-danger border border-danger/30"
-                                          }`}>
-                                          {u.role}
-                                       </span>
-                                    </td>
-                                    <td className="px-5 py-3 text-right">
-                                       {updatingUser === u.email ? (
-                                          <span className="inline-flex items-center text-text-secondary text-[11px] gap-1.5"><Loader2 size={12} className="animate-spin" /> Saving</span>
-                                       ) : (
-                                          <div className="flex items-center justify-end gap-1.5">
-                                             {u.role !== "ADMIN" && u.role !== "USER" && (
-                                                <button type="button" onClick={() => changeUserRole(u.email, "USER")} className="flex flex-col items-center justify-center p-1.5 rounded bg-success/10 text-success border border-success/20 hover:bg-success/20 transition-all font-semibold" title="Approve Access">
-                                                   <UserCheck size={14} />
-                                                </button>
-                                             )}
-                                             {u.role === "USER" && (
-                                                <button type="button" onClick={() => changeUserRole(u.email, "PENDING")} className="flex flex-col items-center justify-center p-1.5 rounded bg-space-blue text-text-secondary border border-glass-border hover:bg-danger/10 hover:text-danger hover:border-danger/30 transition-all font-semibold" title="Revoke Access (Pending)">
-                                                   <UserX size={14} />
-                                                </button>
-                                             )}
-                                             {u.role !== "ADMIN" && u.role !== "REJECTED" && (
-                                                <button type="button" onClick={() => changeUserRole(u.email, "REJECTED")} className="flex flex-col items-center justify-center p-1.5 rounded bg-space-blue text-text-secondary border border-glass-border hover:bg-danger/20 hover:text-danger border border-danger/40 transition-all font-semibold" title="Block / Reject User">
-                                                   <Ban size={14} />
-                                                </button>
-                                             )}
-                                             {u.role === "REJECTED" && (
-                                                <button type="button" onClick={() => changeUserRole(u.email, "PENDING")} className="flex flex-col items-center justify-center p-1.5 rounded bg-warning/10 text-warning border border-warning/30 hover:bg-warning/20 transition-all font-semibold" title="Unblock (Move to Pending)">
-                                                   <RotateCcw size={14} />
-                                                </button>
-                                             )}
-                                             {u.role !== "ADMIN" && (
-                                                <button type="button" onClick={() => changeUserRole(u.email, "ADMIN")} className="flex flex-col items-center justify-center p-1.5 rounded bg-space-blue text-text-secondary border border-glass-border hover:bg-warning/10 hover:text-warning hover:border-warning/30 transition-all font-semibold" title="Make Admin">
-                                                   <ShieldAlert size={14} />
-                                                </button>
-                                             )}
-                                          </div>
-                                       )}
-                                    </td>
+
+                     {/* Pending banner */}
+                     {users.filter(u => u.role === "PENDING").length > 0 && (
+                        <div className="flex items-center gap-2 px-5 py-2.5 bg-warning/5 border-b border-warning/15 text-xs font-semibold text-warning">
+                           <ShieldAlert size={12} />
+                           {users.filter(u => u.role === "PENDING").length} user{users.filter(u => u.role === "PENDING").length > 1 ? "s" : ""} waiting for approval
+                        </div>
+                     )}
+
+                     {/* Loading */}
+                     {usersLoading && (
+                        <div className="flex items-center justify-center gap-2 py-10 text-xs text-text-secondary">
+                           <Loader2 size={14} className="animate-spin" /> Loading users…
+                        </div>
+                     )}
+
+                     {/* Table */}
+                     {!usersLoading && (
+                        <div className="overflow-x-auto">
+                           <table className="w-full text-left text-sm">
+                              <thead className="bg-space-blue/30 text-text-secondary text-xs uppercase tracking-wider">
+                                 <tr>
+                                    <th className="px-5 py-3 font-semibold">User</th>
+                                    <th className="px-5 py-3 font-semibold">Status</th>
+                                    <th className="px-5 py-3 font-semibold text-right">Actions</th>
                                  </tr>
-                              ))}
-                           </tbody>
-                        </table>
-                        {users.length === 0 && !usersLoading && (
-                           <div className="p-8 text-center text-text-secondary text-sm">No users registered yet.</div>
-                        )}
-                     </div>
+                              </thead>
+                              <tbody className="divide-y divide-glass-border/40">
+                                 {users.map((u) => (
+                                    <tr
+                                       key={u.email}
+                                       className={cn(
+                                          "transition-colors",
+                                          u.role === "PENDING" ? "bg-warning/[0.025]" : "hover:bg-space-blue/20"
+                                       )}
+                                    >
+                                       <td className="px-5 py-3.5">
+                                          <div className="flex items-center gap-3">
+                                             <div className="w-8 h-8 rounded-full bg-space-blue border border-glass-border flex items-center justify-center text-xs font-bold text-text-secondary flex-shrink-0">
+                                                {u.name?.charAt(0)?.toUpperCase() || "?"}
+                                             </div>
+                                             <div>
+                                                <p className="text-xs font-semibold text-text-primary">{u.name}</p>
+                                                <p className="text-[11px] text-text-secondary font-mono mt-0.5">{u.email}</p>
+                                             </div>
+                                          </div>
+                                       </td>
+                                       <td className="px-5 py-3.5">
+                                          <span className={cn(
+                                             "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border",
+                                             u.role === "ADMIN"   ? "bg-warning/15 text-warning border-warning/25" :
+                                             u.role === "USER"    ? "bg-success/15 text-success border-success/25" :
+                                             u.role === "PENDING" ? "bg-amber-400/15 text-amber-500 border-amber-400/25" :
+                                                                    "bg-danger/10 text-danger border-danger/25"
+                                          )}>
+                                             <span className={cn(
+                                                "w-1.5 h-1.5 rounded-full flex-shrink-0",
+                                                u.role === "ADMIN"   ? "bg-warning" :
+                                                u.role === "USER"    ? "bg-success" :
+                                                u.role === "PENDING" ? "bg-amber-400" : "bg-danger"
+                                             )} />
+                                             {u.role === "ADMIN" ? "Admin" : u.role === "USER" ? "Active" : u.role === "PENDING" ? "Pending" : "Blocked"}
+                                          </span>
+                                       </td>
+                                       <td className="px-5 py-3.5 text-right">
+                                          {updatingUser === u.email ? (
+                                             <span className="inline-flex items-center gap-1.5 text-text-secondary text-xs">
+                                                <Loader2 size={12} className="animate-spin" /> Saving…
+                                             </span>
+                                          ) : (
+                                             <div className="flex items-center justify-end gap-2">
+                                                {/* Approve (for PENDING or REJECTED) */}
+                                                {(u.role === "PENDING" || u.role === "REJECTED") && (
+                                                   <button type="button" onClick={() => changeUserRole(u.email, "USER")}
+                                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-success/10 text-success border border-success/25 hover:bg-success/20 transition-all">
+                                                      <UserCheck size={12} /> Approve
+                                                   </button>
+                                                )}
+                                                {/* Revoke (for active USER) */}
+                                                {u.role === "USER" && (
+                                                   <button type="button" onClick={() => changeUserRole(u.email, "PENDING")}
+                                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-text-secondary border border-glass-border bg-space-blue hover:bg-warning/10 hover:text-warning hover:border-warning/30 transition-all">
+                                                      <UserX size={12} /> Revoke
+                                                   </button>
+                                                )}
+                                                {/* Block (not for ADMIN or already REJECTED) */}
+                                                {u.role !== "ADMIN" && u.role !== "REJECTED" && (
+                                                   <button type="button" onClick={() => changeUserRole(u.email, "REJECTED")}
+                                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-text-secondary border border-glass-border bg-space-blue hover:bg-danger/10 hover:text-danger hover:border-danger/30 transition-all">
+                                                      <Ban size={12} /> Block
+                                                   </button>
+                                                )}
+                                                {/* Unblock (for REJECTED) */}
+                                                {u.role === "REJECTED" && (
+                                                   <button type="button" onClick={() => changeUserRole(u.email, "PENDING")}
+                                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-warning/10 text-warning border border-warning/25 hover:bg-warning/20 transition-all">
+                                                      <RotateCcw size={12} /> Unblock
+                                                   </button>
+                                                )}
+                                                {/* Make Admin (for active USER only) */}
+                                                {u.role === "USER" && (
+                                                   <button type="button" onClick={() => changeUserRole(u.email, "ADMIN")}
+                                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-text-secondary border border-glass-border bg-space-blue hover:bg-warning/10 hover:text-warning hover:border-warning/30 transition-all">
+                                                      <ShieldAlert size={12} /> Make Admin
+                                                   </button>
+                                                )}
+                                                {/* Remove Admin (for ADMIN users — protected server-side against last admin) */}
+                                                {u.role === "ADMIN" && (
+                                                   <button type="button" onClick={() => changeUserRole(u.email, "USER")}
+                                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-text-secondary border border-glass-border bg-space-blue hover:bg-danger/10 hover:text-danger hover:border-danger/30 transition-all">
+                                                      <UserX size={12} /> Remove Admin
+                                                   </button>
+                                                )}
+                                             </div>
+                                          )}
+                                       </td>
+                                    </tr>
+                                 ))}
+                              </tbody>
+                           </table>
+                           {users.length === 0 && (
+                              <div className="py-12 text-center">
+                                 <ShieldAlert size={26} className="mx-auto mb-3 text-text-secondary opacity-25" />
+                                 <p className="text-sm font-medium text-text-secondary">No users registered yet</p>
+                                 <p className="text-xs text-text-secondary mt-1 opacity-50">Users appear here after their first sign-in</p>
+                              </div>
+                           )}
+                        </div>
+                     )}
                   </div>
                )}
 
-               {/* ── Data Management ── */}
+                              {/* ── Data Management ── */}
                {activeSection === "data" && (
                   <div className="space-y-4 animate-fade-in">
                      {/* Backup */}

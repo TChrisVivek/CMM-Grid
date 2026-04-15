@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useAutoRefresh } from "@/hooks/useAutoRefresh";
 import {
   IndianRupee, TrendingUp, TrendingDown, Package, Users,
   Plus, Trash2, X, ChevronDown, ChevronUp,
@@ -72,6 +73,7 @@ export default function BudgetPage() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+  useAutoRefresh(load);
 
   async function handlePaymentSubmit(e: React.FormEvent) {
     e.preventDefault();

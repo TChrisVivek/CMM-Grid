@@ -48,38 +48,35 @@ export default function Dashboard() {
       <div className="space-y-10 pb-10">
          {/* Welcome Header */}
          <div className="animate-fade-in">
-            <div className="flex items-center gap-2 mb-2">
-               <div className="w-8 h-1 bg-cyan-glow rounded-full shadow-cyan-glow" />
-               <span className="text-[10px] font-black text-cyan-glow uppercase tracking-[3px]">System Ready</span>
-            </div>
-            <h1 className="text-4xl font-black text-text-primary tracking-tighter">Command Center</h1>
-            <p className="text-text-secondary text-sm mt-2 font-medium max-w-xl">
-               Consolidated real-time telemetry for CMM Electricals assets and project operations.
-            </p>
+
+            <h1 className="text-2xl font-bold text-text-primary">Dashboard</h1>
+          <p className="text-text-secondary text-sm mt-1">
+             Real-time overview of inventory, projects, and field operations.
+          </p>
          </div>
 
          {/* Metric Grid */}
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in-up">
             <MetricCard 
-               title="Warehouse Valuation" 
+               title="Stock Value" 
                value={loading ? "..." : `₹${(metrics?.totalStockValue || 0).toLocaleString()}`} 
                icon={BarChart3}
-               subtitle={`${metrics?.totalSkus || 0} Assets Indexed`}
+               subtitle={`${metrics?.totalSkus || 0} items in inventory`}
                variant="cyan"
             />
             <MetricCard 
-               title="Operational Sites" 
+               title="Active Projects" 
                value={loading ? "..." : (metrics?.activeProjects || 0).toString()} 
                icon={FolderKanban}
-               subtitle="Active Field Protocols"
+               subtitle="Currently on site"
                variant="purple"
             />
             <MetricCard 
-               title="Stock Depletion" 
+               title="Low Stock Items" 
                value={loading ? "..." : (metrics?.lowStockCount || 0).toString()} 
                icon={AlertTriangle}
                variant={metrics?.lowStockCount && metrics.lowStockCount > 0 ? "warning" : "success"}
-               subtitle="Critical SKU Thresholds"
+               subtitle="Below threshold"
             />
             <MetricCard 
                title="Project Health" 
@@ -99,10 +96,10 @@ export default function Dashboard() {
             <div className="lg:col-span-2 space-y-8 animate-fade-in-up delay-100">
                <div>
                   <div className="flex items-center justify-between mb-4">
-                     <h2 className="text-lg font-black text-text-primary uppercase tracking-widest flex items-center gap-2">
-                        <Clock size={18} className="text-cyan-glow" />
-                        Network Utilization
-                     </h2>
+                     <h2 className="text-sm font-bold text-text-primary flex items-center gap-2">
+                     <Clock size={16} className="text-cyan-glow" />
+                     Inventory Usage
+                  </h2>
                   </div>
                   
                   <div className="glass rounded-3xl p-8 border border-white/5 bg-white/[0.01]">
@@ -139,34 +136,20 @@ export default function Dashboard() {
                </div>
 
                {/* Design Note Section */}
-               <div className="glass rounded-3xl p-10 border border-cyan-glow/20 bg-cyan-glow/[0.02] relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                     <LayoutDashboard size={120} />
-                  </div>
-                  <div className="relative z-10">
-                     <h3 className="text-xl font-black text-text-primary tracking-tight">CMM-GRID-OS v4.0</h3>
-                     <p className="text-text-secondary text-sm mt-3 leading-relaxed max-w-md font-medium">
-                        Welcome back, Admin. The platform is currently operating at peak efficiency. 
-                        Global synchronization active. Database integrity verified.
-                     </p>
-                     <div className="flex items-center gap-4 mt-8">
-                        <div className="flex items-center gap-1.5 text-[10px] font-black text-cyan-glow uppercase tracking-tighter">
-                           <span className="w-1.5 h-1.5 rounded-full bg-cyan-glow" />
-                           Server Status: Premium
-                        </div>
-                        <div className="flex items-center gap-1.5 text-[10px] font-black text-success uppercase tracking-tighter">
-                           <span className="w-1.5 h-1.5 rounded-full bg-success" />
-                           Latency: 12ms
-                        </div>
-                     </div>
-                  </div>
-               </div>
+                <div className="glass rounded-2xl p-6 border border-glass-border/50">
+                   <div className="relative z-10">
+                      <h3 className="text-sm font-bold text-text-primary">Quick Summary</h3>
+                      <p className="text-text-secondary text-xs mt-2 leading-relaxed">
+                         All systems operational. Use the sidebar to navigate to Inventory, Projects, Labour, and Reports.
+                      </p>
+                   </div>
+                </div>
             </div>
 
             {/* Active Deployments */}
             <div className="space-y-6 animate-fade-in-up delay-200">
                <div className="flex items-center justify-between">
-                  <h2 className="text-base font-black text-text-primary uppercase tracking-widest">Field Alerts</h2>
+                  <h2 className="text-sm font-bold text-text-primary">Active Projects</h2>
                   <button className="p-2 glass glass-hover rounded-xl text-text-muted hover:text-text-primary transition-all">
                      <MoreVertical size={16} />
                   </button>

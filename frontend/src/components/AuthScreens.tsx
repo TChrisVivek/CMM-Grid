@@ -25,13 +25,7 @@ export function LoginScreen() {
         </div>
 
         <div className="relative z-10 max-w-lg mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] mb-6">
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
-            </span>
-            <span className="text-xs font-medium text-cyan-100/70 tracking-wide uppercase">Enterprise System v2.0</span>
-          </div>
+
           <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-white via-white/90 to-white/40 leading-[1.1] tracking-tight mb-6">
             Powering smart <br /> infrastructure.
           </h1>

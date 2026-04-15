@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useAutoRefresh } from "@/hooks/useAutoRefresh";
 import { StockTable } from "@/components/StockTable";
 import { InventoryDetailDrawer } from "@/components/InventoryDetailDrawer";
 import { Package, Plus, X, Loader2 } from "lucide-react";
@@ -8,7 +9,7 @@ import toast from "react-hot-toast";
 import { confirmAction } from "@/lib/confirmToast";
 import type { Product } from "@/lib/types";
 
-const DEFAULT_FORM = { sku: "", name: "", unit: "Piece", totalQty: "", lowStockThreshold: "10", unitPrice: "", invoiceNo: "" };
+const DEFAULT_FORM = { sku: "", name: "", unit: "", totalQty: "", lowStockThreshold: "10", unitPrice: "", invoiceNo: "" };
 
 export default function InventoryPage() {
    const [products, setProducts] = useState<Product[]>([]);
@@ -40,6 +41,7 @@ export default function InventoryPage() {
    }, []);
 
    useEffect(() => { load(); }, [load]);
+   useAutoRefresh(load);
 
    async function handleSubmit(e: React.FormEvent) {
       e.preventDefault();
@@ -103,19 +105,15 @@ export default function InventoryPage() {
       <div className="space-y-6">
          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 animate-fade-in">
             <div>
-               <div className="flex items-center gap-2 mb-1">
-                  <Package size={16} className="text-cyan-glow" />
-                  <span className="text-[10px] font-black text-cyan-glow uppercase tracking-[2px]">Logistics Core</span>
-               </div>
-               <h1 className="text-3xl font-black text-text-primary tracking-tight">Stock Register</h1>
-               <p className="text-text-secondary text-sm mt-1 font-medium">Real-time telemetry of warehouse assets and site allocations.</p>
+               <h1 className="text-2xl font-bold text-text-primary">Inventory</h1>
+               <p className="text-text-secondary text-sm mt-1">Manage warehouse stock and track material allocations.</p>
             </div>
             <button
                onClick={() => setShowModal(true)}
-               className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-cyan-glow-grad text-deep-space text-sm font-black shadow-cyan-glow hover:scale-105 transition-all active:scale-95"
+               className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-glow-grad text-deep-space text-sm font-semibold shadow-cyan-sm hover:shadow-cyan-glow transition-all"
             >
-               <Plus size={16} strokeWidth={3} />
-               APPEND NEW SKU
+               <Plus size={15} strokeWidth={2.5} />
+               Add Item
             </button>
          </div>
 
@@ -159,9 +157,12 @@ export default function InventoryPage() {
                         </div>
                         <div>
                            <label className={labelCls}>Metric Unit</label>
-                           <select value={form.unit} onChange={e => setForm(f => ({ ...f, unit: e.target.value }))} className={inputCls}>
-                              <option>Piece</option><option>Meter</option><option>Kg</option><option>Box</option><option>Roll</option>
-                           </select>
+                            <input
+                               placeholder="e.g. Piece, Meter, Kg, Box"
+                               value={form.unit}
+                               onChange={e => setForm(f => ({ ...f, unit: e.target.value }))}
+                               className={inputCls}
+                            />
                         </div>
                      </div>
                      <div>
@@ -178,10 +179,19 @@ export default function InventoryPage() {
                            <input type="number" min={0} placeholder="10" value={form.lowStockThreshold} onChange={e => setForm(f => ({ ...f, lowStockThreshold: e.target.value }))} className={inputCls} />
                         </div>
                         <div>
-                           <label className={labelCls}>Valuation (₹)</label>
+                           <label className={labelCls}>Unit Price (₹)</label>
                            <input type="number" min={0} step="0.01" placeholder="0" value={form.unitPrice} onChange={e => setForm(f => ({ ...f, unitPrice: e.target.value }))} className={inputCls} />
                         </div>
                      </div>
+                     {/* Auto-calculated total value */}
+                     {(Number(form.totalQty) > 0 && Number(form.unitPrice) > 0) && (
+                        <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-success/5 border border-success/20">
+                           <span className="text-xs font-semibold text-text-secondary uppercase tracking-widest">Total Inventory Value</span>
+                           <span className="text-sm font-bold text-success tabular-nums">
+                              ₹{(Number(form.totalQty) * Number(form.unitPrice)).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                           </span>
+                        </div>
+                     )}
                      <div className="grid grid-cols-2 gap-6">
                         <div>
                            <label className={labelCls}>Invoice Ref</label>

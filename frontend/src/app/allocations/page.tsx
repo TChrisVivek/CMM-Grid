@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useAutoRefresh } from "@/hooks/useAutoRefresh";
 import { ArrowLeftRight, Plus, Trash2, CheckCircle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -45,6 +46,7 @@ export default function AllocationsPage() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+  useAutoRefresh(load);
 
   const addLine = () => setLines(l => [...l, newLine()]);
   const removeLine = (id: number) => setLines(l => l.filter(ln => ln.id !== id));
@@ -86,12 +88,8 @@ export default function AllocationsPage() {
   return (
     <div className="space-y-6">
       <div className="animate-fade-in">
-        <div className="flex items-center gap-2 mb-1">
-          <ArrowLeftRight size={16} className="text-purple-soft" />
-          <span className="text-xs font-mono text-purple-soft uppercase tracking-widest">Batch Allocation</span>
-        </div>
-        <h1 className="text-2xl font-bold text-text-primary">Project Allocation Module</h1>
-        <p className="text-text-secondary text-sm mt-1">Move electrical goods from the Main Warehouse to project sites in a single EOD batch.</p>
+        <h1 className="text-2xl font-bold text-text-primary">Allocations</h1>
+        <p className="text-text-secondary text-sm mt-1">Allocate materials from the warehouse to active project sites.</p>
       </div>
 
       {success && (
@@ -129,7 +127,7 @@ export default function AllocationsPage() {
 
           <div className="px-5 py-3 border-b border-glass-border">
             <h2 className="text-sm font-semibold text-text-primary">Allocation Lines</h2>
-            <p className="text-xs text-text-secondary mt-0.5">Each line = one product → site movement.</p>
+            <p className="text-xs text-text-secondary mt-0.5">Each line moves one product from warehouse to a project site.</p>
           </div>
 
           <div className="divide-y divide-glass-border/50">

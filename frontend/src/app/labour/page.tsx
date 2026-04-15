@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useAutoRefresh } from "@/hooks/useAutoRefresh";
 import {
   Users, Plus, X, Loader2, Phone,
   IndianRupee, FolderKanban, Clock, ArrowRight,
@@ -39,6 +40,7 @@ export default function LabourPage() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+  useAutoRefresh(load);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -86,12 +88,8 @@ export default function LabourPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 animate-fade-in">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Users size={16} className="text-cyan-glow" />
-            <span className="text-xs font-mono text-cyan-glow uppercase tracking-widest">Labour Registry</span>
-          </div>
-          <h1 className="text-2xl font-bold text-text-primary">Labour Tracker</h1>
-          <p className="text-text-secondary text-sm mt-1">All workers employed by CMM Electricals and their current project assignments.</p>
+          <h1 className="text-2xl font-bold text-text-primary">Labour</h1>
+          <p className="text-text-secondary text-sm mt-1">Manage workers and their current project assignments.</p>
         </div>
         <button
           onClick={() => setShowModal(true)}

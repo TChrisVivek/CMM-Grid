@@ -253,7 +253,12 @@ export function InventoryDetailDrawer({ product, onClose, onUpdate }: DrawerProp
                   <div>
                     <p className="text-[10px] uppercase tracking-wide text-text-secondary mb-1">Unit</p>
                     {editing ? (
-                      <input value={form.unit} onChange={(e) => setForm((f) => ({ ...f, unit: e.target.value }))} className={inputCls} placeholder="Piece / Meter" />
+                      <input
+                        value={form.unit}
+                        onChange={(e) => setForm((f) => ({ ...f, unit: e.target.value }))}
+                        placeholder="e.g. Piece, Meter, Kg"
+                        className={inputCls}
+                      />
                     ) : (
                       <p className="text-sm font-medium text-text-primary">{product.unit}</p>
                     )}

@@ -3,7 +3,17 @@
   "projects": [],
   "allocations": [],
   "usages": [],
-  "workers": [],
+  "workers": [
+    {
+      "id": 1,
+      "name": "Raj",
+      "phone": "9128322089",
+      "trade": "Electrician",
+      "dailyRate": 500,
+      "isActive": true,
+      "createdAt": "2026-04-15T03:22:13.069Z"
+    }
+  ],
   "assignments": [],
   "attendance": [],
   "payments": [],
@@ -32,9 +42,9 @@
     "nextProjectId": 1,
     "nextAllocationId": 1,
     "nextUsageId": 1,
-    "nextWorkerId": 1,
+    "nextWorkerId": 2,
     "nextAssignmentId": 1,
-    "nextAttendanceId": 1,
+    "nextAttendanceId": 3,
     "nextPaymentId": 1,
     "nextClientPaymentId": 1,
     "nextDirectPurchaseId": 1

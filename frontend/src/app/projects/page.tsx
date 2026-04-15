@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useAutoRefresh } from "@/hooks/useAutoRefresh";
 import { FolderKanban, MapPin, Plus, X, Loader2, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -45,6 +46,7 @@ export default function ProjectsPage() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+  useAutoRefresh(load);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

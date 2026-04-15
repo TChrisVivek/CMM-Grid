@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useAutoRefresh } from "@/hooks/useAutoRefresh";
 import XLSX from "xlsx-js-style";
 import {
   BarChart3, Download, FileText, Package, FolderKanban,
@@ -109,6 +110,7 @@ export default function ReportsPage() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+  useAutoRefresh(load);
 
   useEffect(() => {
     if (!selectedProjectId) { setProjectDetail(null); setLabourDetail(null); return; }

@@ -101,14 +101,17 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user }) {
       if (!user.email) return false;
 
+      // ── Hard-coded admin override ─────────────────────────
+      // If ADMIN_EMAIL is set and matches, always ensure they are ADMIN.
+      const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase().trim();
+      const isDesignatedAdmin = adminEmail && user.email.toLowerCase() === adminEmail;
+
       try {
-        // 1. Check if user already exists (Supabase first, local store fallback)
         const existingInDB = await findUserInSupabase(user.email);
         const existingLocal = await findUserInLocalStore(user.email);
 
         if (!existingInDB && !existingLocal) {
           // Brand-new user — determine their role
-          // Count users in Supabase; if Supabase is unavailable, count local store users
           const supabaseCount = await countUsersInSupabase();
           let localCount: number | null = null;
 
@@ -117,15 +120,14 @@ export const authOptions: NextAuthOptions = {
             localCount = readStore().users.length;
           } catch { /* ignore */ }
 
-          // Only grant ADMIN if there are genuinely ZERO users in any source
-          // If either source is unavailable but the other has users, new user is PENDING
           const totalKnownUsers =
             supabaseCount !== null ? supabaseCount :
             localCount !== null ? localCount :
-            1; // Both DBs unreachable — assume users exist, default to PENDING (safe)
+            1;
 
           const isFirstUser = totalKnownUsers === 0;
-          const role = isFirstUser ? "ADMIN" : "PENDING";
+          // Designated admin email always gets ADMIN; otherwise first user wins.
+          const role = (isDesignatedAdmin || isFirstUser) ? "ADMIN" : "PENDING";
 
           await insertUserInSupabase({
             id: user.email,
@@ -141,10 +143,15 @@ export const authOptions: NextAuthOptions = {
             image: user.image || "",
             role,
           });
+        } else if (isDesignatedAdmin && existingInDB?.role !== "ADMIN") {
+          // Designated admin exists but was somehow downgraded — restore ADMIN.
+          try {
+            const { supabase: sb } = await import("@/lib/supabase");
+            await sb.from("system_users").update({ role: "ADMIN" }).eq("email", user.email);
+          } catch { /* ignore */ }
         }
       } catch (err) {
         console.error("[auth] signIn callback error:", err);
-        // Don't block login on DB errors — user gets in, role defaulted in session callback
       }
 
       return true;
@@ -152,6 +159,13 @@ export const authOptions: NextAuthOptions = {
 
     async session({ session }) {
       if (!session.user?.email) return session;
+
+      // ── Hard-coded admin override ─────────────────────────
+      const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase().trim();
+      if (adminEmail && session.user.email.toLowerCase() === adminEmail) {
+        (session as unknown as Record<string, Record<string, unknown>>).user.role = "ADMIN";
+        return session;
+      }
 
       try {
         // 1. Try Supabase for role
