@@ -99,7 +99,7 @@ export default function InventoryPage() {
    }
 
    const inputCls = "w-full px-3 py-2 text-sm rounded-lg bg-deep-space/50 border border-white/10 text-text-primary focus:outline-none focus:border-cyan-glow/50 transition-all placeholder:text-text-muted";
-   const labelCls = "block text-xs text-text-secondary mb-1.5 font-medium uppercase tracking-widest opacity-60";
+   const labelCls = "block text-xs text-text-secondary mb-1.5 font-medium";
 
    return (
       <div className="space-y-6">
@@ -138,25 +138,25 @@ export default function InventoryPage() {
          {/* Add Item Modal */}
          {showModal && (
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-fade-in">
-               <div className="absolute inset-0 bg-deep-space/80 backdrop-blur-md" onClick={() => setShowModal(false)} />
-               <div className="relative w-full max-w-lg glass rounded-[2.5rem] shadow-3xl border border-white/10 overflow-hidden relative animate-fade-in-up">
-                  <div className="flex items-center justify-between px-8 py-6 border-b border-white/5 bg-white/[0.02]">
+               <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowModal(false)} />
+               <div className="relative w-full max-w-lg glass rounded-2xl shadow-xl border border-gray-200 overflow-hidden relative animate-fade-in-up">
+                  <div className="flex items-center justify-between px-6 py-5 border-b border-white/5">
                      <div>
-                        <h2 className="text-xl font-black text-text-primary tracking-tight">Initialize Asset</h2>
-                        <p className="text-[9px] font-black text-text-muted uppercase tracking-[2px] mt-0.5">System Registry Protocol</p>
+                        <h2 className="text-base font-bold text-text-primary">Add New Item</h2>
+                        <p className="text-xs text-text-secondary mt-0.5">Fill in the details to add a new stock item.</p>
                      </div>
-                     <button onClick={() => setShowModal(false)} className="p-2 rounded-xl glass glass-hover text-text-muted hover:text-text-primary transition-all active:scale-90">
+                     <button onClick={() => setShowModal(false)} className="p-2 rounded-xl glass glass-hover text-text-muted hover:text-text-primary transition-all ">
                         <X size={20} />
                      </button>
                   </div>
-                  <form onSubmit={handleSubmit} className="p-8 space-y-6">
-                     <div className="grid grid-cols-2 gap-6">
+                  <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                     <div className="grid grid-cols-2 gap-5">
                         <div>
-                           <label className={labelCls}>System SKU</label>
+                           <label className={labelCls}>SKU *</label>
                            <input required placeholder="e.g. CMM-POL-24" value={form.sku} onChange={e => setForm(f => ({ ...f, sku: e.target.value.toUpperCase() }))} className={inputCls} />
                         </div>
                         <div>
-                           <label className={labelCls}>Metric Unit</label>
+                           <label className={labelCls}>Unit</label>
                             <input
                                placeholder="e.g. Piece, Meter, Kg, Box"
                                value={form.unit}
@@ -166,16 +166,16 @@ export default function InventoryPage() {
                         </div>
                      </div>
                      <div>
-                        <label className={labelCls}>Asset Nomenclature</label>
+                        <label className={labelCls}>Item Name *</label>
                         <input required placeholder="e.g. Polycarbonate 2.5" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className={inputCls} />
                      </div>
-                     <div className="grid grid-cols-3 gap-6">
+                     <div className="grid grid-cols-3 gap-5">
                         <div>
-                           <label className={labelCls}>Init Stock</label>
+                           <label className={labelCls}>Opening Qty</label>
                            <input required type="number" min={0} placeholder="0" value={form.totalQty} onChange={e => setForm(f => ({ ...f, totalQty: e.target.value }))} className={inputCls} />
                         </div>
                         <div>
-                           <label className={labelCls}>Low Alarm</label>
+                           <label className={labelCls}>Low Stock Alert</label>
                            <input type="number" min={0} placeholder="10" value={form.lowStockThreshold} onChange={e => setForm(f => ({ ...f, lowStockThreshold: e.target.value }))} className={inputCls} />
                         </div>
                         <div>
@@ -192,26 +192,26 @@ export default function InventoryPage() {
                            </span>
                         </div>
                      )}
-                     <div className="grid grid-cols-2 gap-6">
+                     <div className="grid grid-cols-2 gap-5">
                         <div>
-                           <label className={labelCls}>Invoice Ref</label>
-                           <input placeholder="Optional" value={form.invoiceNo} onChange={e => setForm(f => ({ ...f, invoiceNo: e.target.value }))} className={inputCls} />
+                           <label className={labelCls}>Invoice No. (optional)</label>
+                           <input placeholder="e.g. INV-1024" value={form.invoiceNo} onChange={e => setForm(f => ({ ...f, invoiceNo: e.target.value }))} className={inputCls} />
                         </div>
                         <div>
-                           <label className={labelCls}>Audit Payload</label>
+                           <label className={labelCls}>Attach Invoice (optional)</label>
                            <input
                               type="file"
                               onChange={e => setBillFile(e.target.files?.[0] || null)}
-                              className="w-full text-[10px] text-text-muted file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-white/5 file:text-text-primary hover:file:bg-white/10 transition-all cursor-pointer"
+                              className="w-full text-xs text-text-muted file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-white/5 file:text-text-primary hover:file:bg-white/10 transition-all cursor-pointer"
                               accept="image/*,.pdf"
                            />
                         </div>
                      </div>
                      <div className="flex items-center justify-end gap-4 pt-4 border-t border-white/5">
-                        <button type="button" onClick={() => setShowModal(false)} className="px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest text-text-secondary hover:text-text-primary transition-all">Abort</button>
-                        <button type="submit" disabled={saving} className="flex items-center gap-2 px-8 py-3 rounded-xl bg-cyan-glow-grad text-deep-space text-xs font-black uppercase tracking-widest shadow-cyan-glow hover:scale-[1.02] transition-all disabled:opacity-50">
+                        <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary glass glass-hover transition-all">Cancel</button>
+                        <button type="submit" disabled={saving} className="flex items-center gap-2 px-5 py-2 rounded-xl bg-cyan-glow-grad text-deep-space text-sm font-semibold shadow-cyan-sm hover:shadow-cyan-glow transition-all disabled:opacity-50">
                            {saving && <Loader2 size={14} className="animate-spin" />}
-                           {saving ? "SYNCING..." : "COMMIT REGISTRY"}
+                           {saving ? "Saving…" : "Add Item"}
                         </button>
                      </div>
                   </form>

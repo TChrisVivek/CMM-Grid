@@ -1,7 +1,43 @@
 {
-  "products": [],
-  "projects": [],
-  "allocations": [],
+  "products": [
+    {
+      "id": 1,
+      "sku": "LED-18W",
+      "name": "LED Downlight 18W",
+      "unit": "Pcs",
+      "totalQty": 50,
+      "warehouseQty": 45,
+      "lowStockThreshold": 10,
+      "unitPrice": 350,
+      "createdAt": "2026-04-16T05:05:45.196Z",
+      "invoiceNo": "",
+      "billUrl": ""
+    }
+  ],
+  "projects": [
+    {
+      "id": 1,
+      "name": "Sector 14 Office Rewiring",
+      "siteAddress": "Sector 14, Faridabad",
+      "status": "ACTIVE",
+      "budget": 0,
+      "createdAt": "2026-04-16T05:06:23.497Z"
+    }
+  ],
+  "allocations": [
+    {
+      "id": 1,
+      "productId": 1,
+      "productName": "LED Downlight 18W",
+      "productSku": "LED-18W",
+      "productUnit": "Pcs",
+      "projectId": 1,
+      "projectName": "Sector 14 Office Rewiring",
+      "quantity": 5,
+      "allocatedDate": "2026-04-16",
+      "notes": ""
+    }
+  ],
   "usages": [],
   "workers": [
     {
@@ -12,6 +48,15 @@
       "dailyRate": 500,
       "isActive": true,
       "createdAt": "2026-04-15T03:22:13.069Z"
+    },
+    {
+      "id": 2,
+      "name": "Rajesh Kumar",
+      "phone": "9876543210",
+      "trade": "Electrician",
+      "dailyRate": 700,
+      "isActive": true,
+      "createdAt": "2026-04-16T05:08:01.634Z"
     }
   ],
   "assignments": [],
@@ -38,11 +83,11 @@
     }
   ],
   "_meta": {
-    "nextProductId": 1,
-    "nextProjectId": 1,
-    "nextAllocationId": 1,
+    "nextProductId": 2,
+    "nextProjectId": 2,
+    "nextAllocationId": 2,
     "nextUsageId": 1,
-    "nextWorkerId": 2,
+    "nextWorkerId": 3,
     "nextAssignmentId": 1,
     "nextAttendanceId": 3,
     "nextPaymentId": 1,

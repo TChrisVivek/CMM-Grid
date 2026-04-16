@@ -76,7 +76,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           }}
         />
       </head>
-      <body className="bg-deep-space text-text-primary grid-bg antialiased">
+      <body className="bg-[#f1f5f9] text-text-primary antialiased">
         <AuthProvider session={session}>
           <ToastProvider />
           <OfflineProvider>
@@ -90,7 +90,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <div className="relative flex min-h-screen">
                 <Sidebar isAdmin={(session as SessionWithRole).user?.role === "ADMIN"} />
                 <main className="flex-1 lg:pl-64 min-h-screen">
-                  <div className="max-w-[1400px] mx-auto px-5 sm:px-7 lg:px-10 py-8 pt-16 lg:pt-8">
+                  <div className="max-w-[1400px] mx-auto px-5 sm:px-7 lg:px-10 py-8 pt-20 lg:pt-10">
                     {children}
                   </div>
                 </main>
