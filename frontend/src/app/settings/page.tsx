@@ -262,8 +262,10 @@ export default function SettingsPage() {
                               {/* Preview */}
                               <div className="w-16 h-16 rounded-xl border border-glass-border bg-space-blue flex items-center justify-center flex-shrink-0 overflow-hidden">
                                  {settings.companyLogo ? (
-                                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                                     <img src={settings.companyLogo} alt="Logo" className="w-full h-full object-contain p-1" />
+                                     <>
+                                       {/* eslint-disable-next-line @next/next/no-img-element */}
+                                       <img src={settings.companyLogo} alt="Logo" className="w-full h-full object-contain p-1" />
+                                     </>
                                  ) : (
                                     <span className="text-2xl text-text-secondary font-black">?</span>
                                  )}
