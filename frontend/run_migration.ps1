@@ -1,5 +1,5 @@
 $url = "https://avgiyfvyrttoexcukaxx.supabase.co"
-$serviceKey = "YOUR_SUPABASE_SERVICE_KEY_HERE"
+$serviceKey = "YOUR_SUPABASE_SERVICE_KEY_HERE"  # Never commit real keys — set this manually before running
 
 $headers = @{
     "apikey"        = $serviceKey

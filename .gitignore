@@ -35,3 +35,6 @@ Thumbs.db
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Migration script may contain secrets - run locally only
+frontend/run_migration.ps1
