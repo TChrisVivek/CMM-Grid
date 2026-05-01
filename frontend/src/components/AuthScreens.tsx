@@ -1,7 +1,7 @@
 "use client";
 
 import { signIn, signOut } from "next-auth/react";
-import { ShieldAlert, Ban, Zap, ArrowRight, Package, FolderKanban, Users, BarChart3, CheckCircle2, Shield, Clock } from "lucide-react";
+import { ShieldAlert, Ban, Zap, ArrowRight, Package, FolderKanban, Users, BarChart3, CheckCircle2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface Branding {
@@ -32,160 +32,134 @@ async function doSignOut() {
 }
 
 const FEATURES = [
-  {
-    icon: Package,
-    color: "#06b6d4",
-    bg: "rgba(6,182,212,0.08)",
-    border: "rgba(6,182,212,0.15)",
-    title: "Smart Inventory",
-    desc: "Track stock in real-time, get low-stock alerts, and allocate materials to projects instantly.",
-  },
-  {
-    icon: FolderKanban,
-    color: "#a78bfa",
-    bg: "rgba(167,139,250,0.08)",
-    border: "rgba(167,139,250,0.15)",
-    title: "Project Management",
-    desc: "Manage multiple sites, track progress, log expenses, and monitor delivery timelines.",
-  },
-  {
-    icon: Users,
-    color: "#34d399",
-    bg: "rgba(52,211,153,0.08)",
-    border: "rgba(52,211,153,0.15)",
-    title: "Labour Management",
-    desc: "Record daily attendance, calculate wages, and manage payments for your entire field crew.",
-  },
-  {
-    icon: BarChart3,
-    color: "#f59e0b",
-    bg: "rgba(245,158,11,0.08)",
-    border: "rgba(245,158,11,0.15)",
-    title: "Reports & Exports",
-    desc: "Generate Excel reports for inventory, projects, and labour with one click.",
-  },
-];
-
-const TRUST = [
-  { icon: Shield, label: "Role-based access control" },
-  { icon: CheckCircle2, label: "Google OAuth secured" },
-  { icon: Clock, label: "Real-time data sync" },
+  { icon: Package,       color: "#06b6d4", label: "Smart Inventory",     desc: "Real-time stock tracking & allocation" },
+  { icon: FolderKanban,  color: "#a78bfa", label: "Project Management",  desc: "Multi-site coordination & expenses" },
+  { icon: Users,         color: "#34d399", label: "Labour Management",   desc: "Attendance, wages & payments" },
+  { icon: BarChart3,     color: "#f59e0b", label: "Reports & Exports",   desc: "One-click Excel report generation" },
 ];
 
 export function LoginScreen() {
   const { companyName, companyLogo } = useBranding();
 
   return (
-    <div className="min-h-[100dvh] bg-[#030712] font-sans text-white selection:bg-cyan-500/30 overflow-x-hidden">
+    <div className="flex min-h-[100dvh] bg-[#030712] font-sans text-white selection:bg-cyan-500/30">
 
-      {/* ── Ambient glow ── */}
-      <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute top-0 left-1/3 w-[600px] h-[600px] bg-cyan-500/[0.08] blur-[140px] rounded-full" />
-        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-violet-600/[0.08] blur-[120px] rounded-full" />
-        <div className="absolute inset-0 opacity-[0.04] bg-[linear-gradient(rgba(255,255,255,0.15)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.15)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_30%,#000_20%,transparent_100%)]" />
-      </div>
+      {/* ── Left Panel — Branding ── */}
+      <div className="hidden lg:flex flex-col justify-between w-[55%] p-14 relative overflow-hidden">
 
-      {/* ── Navbar ── */}
-      <nav className="relative z-10 flex items-center justify-between px-6 sm:px-10 py-5 border-b border-white/[0.04] backdrop-blur-md bg-[#030712]/60">
-        <div className="flex items-center gap-3">
-          <div className={`w-9 h-9 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.25)] overflow-hidden flex-shrink-0 ${companyLogo ? "bg-transparent" : "bg-gradient-to-tr from-cyan-500 to-blue-600"}`}>
+        {/* Background effects */}
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-950/40 via-[#030712] to-violet-950/30 z-0" />
+        <div className="absolute inset-0 z-0 opacity-[0.06] bg-[linear-gradient(rgba(255,255,255,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.2)_1px,transparent_1px)] bg-[size:44px_44px] [mask-image:radial-gradient(ellipse_70%_70%_at_40%_40%,#000_20%,transparent_100%)]" />
+        <div className="absolute top-[-100px] right-[-80px] w-[500px] h-[500px] bg-cyan-500/10 blur-[130px] rounded-full pointer-events-none z-0" />
+        <div className="absolute bottom-[-80px] left-[-60px] w-[400px] h-[400px] bg-violet-600/10 blur-[120px] rounded-full pointer-events-none z-0" />
+
+        {/* Logo */}
+        <div className="relative z-10 flex items-center gap-3">
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-[0_0_24px_rgba(6,182,212,0.3)] overflow-hidden flex-shrink-0 ${companyLogo ? "bg-transparent" : "bg-gradient-to-tr from-cyan-500 to-blue-600"}`}>
             {companyLogo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={companyLogo} alt="Logo" className="w-full h-full object-cover" />
             ) : (
-              <Zap size={18} className="text-white" strokeWidth={2.5} />
+              <Zap size={20} className="text-white" strokeWidth={2.5} />
             )}
           </div>
-          <span className="text-base font-bold tracking-tight text-white/90">{companyName}</span>
+          <span className="text-lg font-bold tracking-tight text-white/90">{companyName}</span>
         </div>
-        <button
-          onClick={() => signIn("google")}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.10] border border-white/[0.08] hover:border-white/[0.15] text-sm font-semibold text-white/80 hover:text-white transition-all"
-        >
-          Sign In <ArrowRight size={15} />
-        </button>
-      </nav>
 
-      {/* ── Hero ── */}
-      <section className="relative z-10 text-center px-6 pt-20 pb-16 sm:pt-28 sm:pb-20">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold tracking-wide mb-8">
-          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-          Operations Platform
+        {/* Hero text */}
+        <div className="relative z-10 max-w-lg">
+          <h1 className="text-5xl xl:text-6xl font-extrabold leading-[1.08] tracking-tight mb-6 bg-gradient-to-br from-white via-white/90 to-white/35 bg-clip-text text-transparent">
+            Your complete<br />site operations<br />hub.
+          </h1>
+          <p className="text-slate-400 text-lg font-light leading-relaxed mb-10">
+            A unified platform for {companyName} to manage inventory, coordinate projects, and track field labour — all in one place.
+          </p>
+
+          {/* Feature list */}
+          <div className="space-y-4">
+            {FEATURES.map(({ icon: Icon, color, label, desc }) => (
+              <div key={label} className="flex items-center gap-4">
+                <div
+                  style={{ background: `${color}12`, border: `1px solid ${color}20` }}
+                  className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                >
+                  <Icon size={16} style={{ color }} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-white/80">{label}</p>
+                  <p className="text-xs text-slate-500">{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.05] mb-6 bg-gradient-to-br from-white via-white/90 to-white/40 bg-clip-text text-transparent max-w-4xl mx-auto">
-          Your complete site<br />operations hub.
-        </h1>
-        <p className="text-slate-400 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-light">
-          Manage inventory, projects, and field labour for {companyName} — all in one unified platform.
+
+        {/* Footer */}
+        <p className="relative z-10 text-xs text-slate-700">
+          © {new Date().getFullYear()} {companyName}. All rights reserved.
         </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <button
-            onClick={() => signIn("google")}
-            className="group flex items-center gap-3 px-7 py-4 rounded-2xl bg-white text-slate-800 font-bold text-base hover:bg-slate-50 transition-all shadow-[0_4px_24px_rgba(255,255,255,0.12)] hover:shadow-[0_8px_32px_rgba(255,255,255,0.18)] active:scale-[0.98]"
-          >
-            <svg viewBox="0 0 24 24" className="w-5 h-5 flex-shrink-0" fill="currentColor">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-            </svg>
-            Continue with Google
-            <ArrowRight size={18} className="opacity-40 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
-          </button>
-        </div>
+      </div>
 
-        {/* Trust badges */}
-        <div className="flex flex-wrap items-center justify-center gap-5 mt-10">
-          {TRUST.map(({ icon: Icon, label }) => (
-            <div key={label} className="flex items-center gap-2 text-xs text-slate-500">
-              <Icon size={13} className="text-slate-600" /> {label}
+      {/* ── Right Panel — Sign In ── */}
+      <div className="flex-1 flex items-center justify-center p-6 sm:p-10 relative">
+        {/* Mobile background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a1020] to-[#030712] lg:bg-none z-0" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-cyan-500/8 blur-[100px] rounded-full pointer-events-none lg:hidden z-0" />
+
+        <div className="relative z-10 w-full max-w-[400px]">
+
+          {/* Mobile logo */}
+          <div className="flex lg:hidden items-center justify-center gap-3 mb-10">
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-[0_0_28px_rgba(6,182,212,0.3)] overflow-hidden ${companyLogo ? "bg-transparent" : "bg-gradient-to-tr from-cyan-500 to-blue-600"}`}>
+              {companyLogo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={companyLogo} alt="Logo" className="w-full h-full object-cover" />
+              ) : (
+                <Zap size={24} className="text-white" strokeWidth={2.5} />
+              )}
             </div>
-          ))}
-        </div>
-      </section>
+            <span className="text-xl font-bold text-white/90">{companyName}</span>
+          </div>
 
-      {/* ── Feature grid ── */}
-      <section className="relative z-10 px-6 sm:px-10 pb-16 max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {FEATURES.map(({ icon: Icon, color, bg, border, title, desc }) => (
-            <div
-              key={title}
-              style={{ background: bg, borderColor: border }}
-              className="rounded-2xl border p-6 flex flex-col gap-4 hover:scale-[1.02] transition-transform duration-300"
+          {/* Sign-in card */}
+          <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.07] rounded-3xl p-8 sm:p-10 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.6)]">
+
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">Welcome back</h2>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                Sign in with your authorized Google account to access {companyName}.
+              </p>
+            </div>
+
+            {/* Google sign-in button */}
+            <button
+              onClick={() => signIn("google")}
+              className="group w-full flex items-center gap-3 px-5 py-4 rounded-2xl bg-white hover:bg-slate-50 active:scale-[0.98] transition-all duration-200 shadow-[0_2px_12px_rgba(255,255,255,0.08)] hover:shadow-[0_4px_20px_rgba(255,255,255,0.14)]"
             >
-              <div
-                style={{ background: `${color}15`, border: `1px solid ${color}25` }}
-                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-              >
-                <Icon size={18} style={{ color }} />
-              </div>
-              <div>
-                <p className="font-bold text-white/90 text-sm mb-1.5">{title}</p>
-                <p className="text-slate-500 text-xs leading-relaxed">{desc}</p>
-              </div>
+              <svg viewBox="0 0 24 24" className="w-5 h-5 flex-shrink-0">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+              </svg>
+              <span className="font-semibold text-slate-700 text-sm flex-1 text-left">Continue with Google</span>
+              <ArrowRight size={16} className="text-slate-400 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" />
+            </button>
+
+            {/* Security note */}
+            <div className="mt-6 flex items-start gap-2.5 px-4 py-3.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
+              <CheckCircle2 size={14} className="text-cyan-500 mt-0.5 flex-shrink-0" />
+              <p className="text-[11px] text-slate-600 leading-relaxed">
+                Access is restricted to authorized personnel only. All sign-in attempts are logged.
+              </p>
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
 
-      {/* ── Bottom CTA ── */}
-      <section className="relative z-10 px-6 pb-20 text-center">
-        <div className="max-w-xl mx-auto bg-white/[0.03] border border-white/[0.06] rounded-3xl p-10">
-          <p className="text-xl font-bold text-white mb-2">Ready to get started?</p>
-          <p className="text-slate-500 text-sm mb-6">Sign in with your authorized Google account to access {companyName}.</p>
-          <button
-            onClick={() => signIn("google")}
-            className="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-sm hover:opacity-90 transition-all shadow-[0_4px_20px_rgba(6,182,212,0.3)] hover:shadow-[0_6px_28px_rgba(6,182,212,0.4)]"
-          >
-            Sign In with Google
-          </button>
+          <p className="text-center text-xs text-slate-700 mt-6">
+            © {new Date().getFullYear()} {companyName}. All rights reserved.
+          </p>
         </div>
-      </section>
-
-      {/* ── Footer ── */}
-      <footer className="relative z-10 border-t border-white/[0.04] px-6 py-6 text-center text-xs text-slate-600">
-        © {new Date().getFullYear()} {companyName}. All rights reserved. · Authorized access only.
-      </footer>
+      </div>
     </div>
   );
 }
@@ -215,7 +189,7 @@ export function PendingScreen() {
 
         <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-slate-400 mb-3 tracking-tight">Access Pending</h1>
         <p className="text-slate-400 mb-10 text-sm leading-relaxed">
-          Your account has been securely verified by Google, but you require manual clearance from an Administrator before you can access {companyName}.
+          Your account has been verified by Google, but requires administrator approval before accessing {companyName}.
         </p>
 
         <button
@@ -244,7 +218,7 @@ export function BlockedScreen() {
 
         <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-red-100 to-red-400 mb-3 tracking-tight">Access Denied</h1>
         <p className="text-red-200/60 mb-10 text-sm leading-relaxed">
-          Your access to {companyName} has been explicitly revoked or blocked by Administration. Contact your administrator to dispute this status.
+          Your access to {companyName} has been revoked by Administration. Contact your administrator to dispute this.
         </p>
 
         <button
