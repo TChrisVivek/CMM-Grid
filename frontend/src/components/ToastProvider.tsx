@@ -4,7 +4,7 @@ import { useToaster, resolveValue } from "react-hot-toast";
 import type { Toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import {
-  CheckCircle2, XCircle, AlertTriangle, Info, Loader2, X,
+  CheckCircle2, XCircle, Info, Loader2, X,
 } from "lucide-react";
 
 /* ─── Per-type config ───────────────────────────────────────────── */

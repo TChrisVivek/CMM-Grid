@@ -26,7 +26,6 @@ export const confirmAction = (
   const iconBg = danger ? "rgba(220,38,38,0.08)" : "rgba(37,99,235,0.08)";
   const iconBorder = danger ? "rgba(220,38,38,0.2)" : "rgba(37,99,235,0.2)";
   const confirmColor = danger ? "#dc2626" : "#2563eb";
-  const confirmHoverBg = danger ? "rgba(220,38,38,0.08)" : "rgba(37,99,235,0.08)";
 
   return new Promise((resolve) => {
     toast.custom(
