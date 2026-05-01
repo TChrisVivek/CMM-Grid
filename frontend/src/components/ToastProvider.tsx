@@ -1,6 +1,6 @@
 "use client";
 
-import { useToaster, resolveValue } from "react-hot-toast";
+import toast, { useToaster, resolveValue } from "react-hot-toast";
 import type { Toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import {
@@ -232,7 +232,7 @@ export function ToastProvider() {
         onMouseLeave={endPause}
       >
         {regularToasts.map((t) => (
-          <ToastCard key={t.id} t={t} dismiss={handlers.dismiss} />
+          <ToastCard key={t.id} t={t} dismiss={toast.dismiss} />
         ))}
       </div>
 
