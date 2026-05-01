@@ -4,14 +4,15 @@ import { supabase, isSupabaseAvailable } from "@/lib/supabase";
 export const dynamic = 'force-dynamic';
 
 const DEFAULTS = {
-  companyName: "CMM Electricals",
+  companyName: "CMM Grid",
   companyAddress: "",
   companyPhone: "",
   companyEmail: "",
   defaultLowStockThreshold: 50,
   defaultDailyRate: 600,
   currency: "INR",
-  reportFooter: "Confidential — CMM Electricals",
+  reportFooter: "Confidential",
+  companyLogo: "",
 };
 
 export async function GET() {
@@ -22,23 +23,41 @@ export async function GET() {
       .eq('id', 1)
       .single();
 
-    if (error) {
-      return NextResponse.json(DEFAULTS);
+    if (!error && data) {
+      return NextResponse.json({
+        companyName: data.company_name,
+        companyAddress: data.company_address,
+        companyPhone: data.company_phone,
+        companyEmail: data.company_email,
+        defaultLowStockThreshold: data.default_low_stock_threshold,
+        defaultDailyRate: data.default_daily_rate,
+        currency: data.currency,
+        reportFooter: data.report_footer,
+        companyLogo: data.company_logo ?? "",
+      });
     }
-
-    return NextResponse.json({
-      companyName: data.company_name,
-      companyAddress: data.company_address,
-      companyPhone: data.company_phone,
-      companyEmail: data.company_email,
-      defaultLowStockThreshold: data.default_low_stock_threshold,
-      defaultDailyRate: data.default_daily_rate,
-      currency: data.currency,
-      reportFooter: data.report_footer,
-    });
   }
 
-  // Fallback: return defaults
+  // Fallback: read from local store.json
+  try {
+    const { readStore } = await import("@/lib/store");
+    const store = readStore();
+    const s = store.settings;
+    if (s) {
+      return NextResponse.json({
+        companyName: s.companyName ?? DEFAULTS.companyName,
+        companyAddress: s.companyAddress ?? DEFAULTS.companyAddress,
+        companyPhone: s.companyPhone ?? DEFAULTS.companyPhone,
+        companyEmail: s.companyEmail ?? DEFAULTS.companyEmail,
+        defaultLowStockThreshold: Number(s.defaultLowStockThreshold) || DEFAULTS.defaultLowStockThreshold,
+        defaultDailyRate: Number(s.defaultDailyRate) || DEFAULTS.defaultDailyRate,
+        currency: s.currency ?? DEFAULTS.currency,
+        reportFooter: s.reportFooter ?? DEFAULTS.reportFooter,
+        companyLogo: s.companyLogo ?? "",
+      });
+    }
+  } catch { /* ignore */ }
+
   return NextResponse.json(DEFAULTS);
 }
 
@@ -50,14 +69,15 @@ export async function PUT(req: Request) {
       .from('settings')
       .upsert({
         id: 1,
-        company_name: body.companyName ?? "CMM Electricals",
+        company_name: body.companyName ?? DEFAULTS.companyName,
         company_address: body.companyAddress ?? "",
         company_phone: body.companyPhone ?? "",
         company_email: body.companyEmail ?? "",
         default_low_stock_threshold: Number(body.defaultLowStockThreshold) || 50,
         default_daily_rate: Number(body.defaultDailyRate) || 600,
         currency: body.currency ?? "INR",
-        report_footer: body.reportFooter ?? "Confidential — CMM Electricals",
+        report_footer: body.reportFooter ?? "Confidential",
+        company_logo: body.companyLogo ?? "",
         updated_at: new Date().toISOString(),
       })
       .select()
@@ -76,18 +96,29 @@ export async function PUT(req: Request) {
       defaultDailyRate: data.default_daily_rate,
       currency: data.currency,
       reportFooter: data.report_footer,
+      companyLogo: data.company_logo ?? "",
     });
   }
 
-  // Fallback: just echo back the settings
-  return NextResponse.json({
+  // Fallback: persist to store.json
+  const newSettings = {
     companyName: body.companyName ?? DEFAULTS.companyName,
-    companyAddress: body.companyAddress ?? DEFAULTS.companyAddress,
-    companyPhone: body.companyPhone ?? DEFAULTS.companyPhone,
-    companyEmail: body.companyEmail ?? DEFAULTS.companyEmail,
-    defaultLowStockThreshold: Number(body.defaultLowStockThreshold) || DEFAULTS.defaultLowStockThreshold,
-    defaultDailyRate: Number(body.defaultDailyRate) || DEFAULTS.defaultDailyRate,
-    currency: body.currency ?? DEFAULTS.currency,
-    reportFooter: body.reportFooter ?? DEFAULTS.reportFooter,
-  });
+    companyAddress: body.companyAddress ?? "",
+    companyPhone: body.companyPhone ?? "",
+    companyEmail: body.companyEmail ?? "",
+    defaultLowStockThreshold: Number(body.defaultLowStockThreshold) || 50,
+    defaultDailyRate: Number(body.defaultDailyRate) || 600,
+    currency: body.currency ?? "INR",
+    reportFooter: body.reportFooter ?? "Confidential",
+    companyLogo: body.companyLogo ?? "",
+  };
+
+  try {
+    const { readStore, writeStore } = await import("@/lib/store");
+    const store = readStore();
+    store.settings = newSettings;
+    writeStore(store);
+  } catch { /* read-only env — just echo back */ }
+
+  return NextResponse.json(newSettings);
 }

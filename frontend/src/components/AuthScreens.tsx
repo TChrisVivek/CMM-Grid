@@ -2,8 +2,38 @@
 
 import { signIn, signOut } from "next-auth/react";
 import { ShieldAlert, Ban, Zap, ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
+
+interface Branding {
+  companyName: string;
+  companyLogo: string;
+}
+
+function useBranding(): Branding {
+  const [branding, setBranding] = useState<Branding>({ companyName: "CMM Grid", companyLogo: "" });
+  useEffect(() => {
+    fetch("/api/branding", { cache: "no-store" })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data) setBranding({ companyName: data.companyName || "CMM Grid", companyLogo: data.companyLogo || "" });
+      })
+      .catch(() => {});
+  }, []);
+  return branding;
+}
+
+async function doSignOut() {
+  if ('serviceWorker' in navigator) {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    for (const r of regs) await r.unregister();
+  }
+  await signOut({ redirect: false });
+  window.location.href = "/?t=" + Date.now();
+}
 
 export function LoginScreen() {
+  const { companyName, companyLogo } = useBranding();
+
   return (
     <div className="flex bg-[#030712] min-h-[100dvh] font-sans selection:bg-cyan-500/30">
       {/* Left Hemisphere: Branding & Graphic */}
@@ -17,20 +47,24 @@ export function LoginScreen() {
 
         <div className="relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.3)]">
-              <Zap size={20} className="text-white" strokeWidth={2.5} />
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.3)] overflow-hidden flex-shrink-0 ${companyLogo ? 'bg-transparent' : 'bg-gradient-to-tr from-cyan-500 to-blue-600'}`}>
+              {companyLogo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={companyLogo} alt="Logo" className="w-full h-full object-cover" />
+              ) : (
+                <Zap size={20} className="text-white" strokeWidth={2.5} />
+              )}
             </div>
-            <span className="text-xl font-bold tracking-tight text-white/90">CMM Grid</span>
+            <span className="text-xl font-bold tracking-tight text-white/90">{companyName}</span>
           </div>
         </div>
 
         <div className="relative z-10 max-w-lg mb-10">
-
           <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-white via-white/90 to-white/40 leading-[1.1] tracking-tight mb-6">
             Powering smart <br /> infrastructure.
           </h1>
           <p className="text-lg text-slate-400 font-light leading-relaxed">
-            A centralized nervous system for CMM Electricals. Manage inventory pipelines, allocate project resources, and track field labor in real-time.
+            A centralized management system for {companyName}. Manage inventory pipelines, allocate project resources, and track field labor in real-time.
           </p>
         </div>
       </div>
@@ -43,11 +77,16 @@ export function LoginScreen() {
 
         <div className="w-full max-w-[420px] relative z-10">
           <div className="text-center lg:text-left mb-8">
-            <div className="lg:hidden w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.3)] mb-6">
-              <Zap size={28} className="text-white" strokeWidth={2.5} />
+            <div className={`lg:hidden w-16 h-16 mx-auto rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.3)] mb-6 overflow-hidden ${companyLogo ? 'bg-transparent' : 'bg-gradient-to-tr from-cyan-500 to-blue-600'}`}>
+              {companyLogo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={companyLogo} alt="Logo" className="w-full h-full object-cover" />
+              ) : (
+                <Zap size={28} className="text-white" strokeWidth={2.5} />
+              )}
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2 tracking-tight">Welcome back</h2>
-            <p className="text-slate-400 text-sm">Secure authorization required to access the grid.</p>
+            <p className="text-slate-400 text-sm">Secure authorization required to access {companyName}.</p>
           </div>
 
           <div className="bg-[#0B1120]/80 backdrop-blur-xl border border-white/[0.05] p-8 rounded-3xl shadow-2xl">
@@ -78,13 +117,13 @@ export function LoginScreen() {
               </div>
 
               <div className="text-center rounded-xl bg-cyan-500/[0.03] border border-cyan-500/[0.08] p-4 text-xs text-cyan-200/50 leading-relaxed font-medium">
-                Access is strictly restricted to authorized company personnel. All authentication attempts are logged and monitored.
+                Access is strictly restricted to authorized personnel. All authentication attempts are logged and monitored.
               </div>
             </div>
           </div>
 
           <p className="text-center text-xs text-slate-600 mt-8">
-            &copy; {new Date().getFullYear()} CMM Electricals. All rights reserved.
+            &copy; {new Date().getFullYear()} {companyName}. All rights reserved.
           </p>
         </div>
       </div>
@@ -103,6 +142,8 @@ const ElegantBackground = ({ children }: { children: React.ReactNode }) => (
 );
 
 export function PendingScreen() {
+  const { companyName } = useBranding();
+
   return (
     <ElegantBackground>
       <div className="bg-[#0B1120]/90 backdrop-blur-2xl rounded-[32px] p-8 sm:p-12 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)] border border-white/[0.05] text-center relative overflow-hidden">
@@ -115,18 +156,11 @@ export function PendingScreen() {
 
         <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-slate-400 mb-3 tracking-tight">Access Pending</h1>
         <p className="text-slate-400 mb-10 text-sm leading-relaxed">
-          Your account has been securely verified by Google, but you require manual clearance from an Administrator before you can enter the grid.
+          Your account has been securely verified by Google, but you require manual clearance from an Administrator before you can access {companyName}.
         </p>
 
         <button
-          onClick={async () => {
-            if ('serviceWorker' in navigator) {
-              const regs = await navigator.serviceWorker.getRegistrations();
-              for (const r of regs) await r.unregister();
-            }
-            await signOut({ redirect: false });
-            window.location.href = "/?t=" + Date.now();
-          }}
+          onClick={doSignOut}
           className="w-full group px-6 py-3.5 rounded-xl border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/[0.15] text-sm font-semibold text-slate-300 transition-all flex items-center justify-center gap-2"
         >
           Return to Sign In <ArrowRight size={16} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
@@ -137,6 +171,8 @@ export function PendingScreen() {
 }
 
 export function BlockedScreen() {
+  const { companyName } = useBranding();
+
   return (
     <ElegantBackground>
       <div className="bg-[#0B1120]/90 backdrop-blur-2xl rounded-[32px] p-8 sm:p-12 shadow-[0_20px_60px_-15px_rgba(220,38,38,0.2)] border border-red-500/20 text-center relative overflow-hidden">
@@ -149,17 +185,11 @@ export function BlockedScreen() {
 
         <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-red-100 to-red-400 mb-3 tracking-tight">Access Denied</h1>
         <p className="text-red-200/60 mb-10 text-sm leading-relaxed">
-          Your clearance to the CMM System has been explicitly revoked or blocked by Administration. Contact IT Support to dispute this status.
+          Your access to {companyName} has been explicitly revoked or blocked by Administration. Contact your administrator to dispute this status.
         </p>
 
         <button
-          onClick={async () => {
-            if ('serviceWorker' in navigator) {
-              const regs = await navigator.serviceWorker.getRegistrations();
-              for (const r of regs) await r.unregister();
-            }
-            signOut({ callbackUrl: "/" });
-          }}
+          onClick={doSignOut}
           className="w-full group px-6 py-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 hover:text-red-300 text-sm font-semibold transition-all flex items-center justify-center gap-2"
         >
           Sign Out Securely

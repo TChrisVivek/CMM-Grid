@@ -84,3 +84,41 @@ export async function POST(req: NextRequest) {
   writeStore(store);
   return NextResponse.json(worker, { status: 201 });
 }
+
+// DELETE /api/workers?id=<id>
+export async function DELETE(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const id = Number(searchParams.get("id"));
+
+  if (!id) {
+    return NextResponse.json({ error: "Worker ID is required" }, { status: 400 });
+  }
+
+  if (await isSupabaseAvailable()) {
+    // Also remove all related records for this worker
+    await supabase.from('assignments').delete().eq('worker_id', id);
+    await supabase.from('attendance').delete().eq('worker_id', id);
+    await supabase.from('payments').delete().eq('worker_id', id);
+
+    const { error } = await supabase.from('workers').delete().eq('id', id);
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ ok: true });
+  }
+
+  // Fallback: local store
+  const store = readStore();
+  const exists = store.workers.find(w => w.id === id);
+  if (!exists) {
+    return NextResponse.json({ error: "Worker not found" }, { status: 404 });
+  }
+
+  // Remove worker and all related records
+  store.workers = store.workers.filter(w => w.id !== id);
+  store.assignments = store.assignments.filter(a => a.workerId !== id);
+  store.attendance = store.attendance.filter(a => a.workerId !== id);
+  store.payments = store.payments.filter(p => p.workerId !== id);
+  writeStore(store);
+  return NextResponse.json({ ok: true });
+}

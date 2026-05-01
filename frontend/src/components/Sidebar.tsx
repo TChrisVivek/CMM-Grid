@@ -23,20 +23,52 @@ const navItems = [
   { href: "/settings", icon: Settings, label: "Settings" },
 ];
 
+interface Branding {
+  companyName: string;
+  companyLogo: string;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { isOnline, pendingCount, mounted } = useOffline();
   const effectiveOnline = !mounted || isOnline;
-  const [companyLogo, setCompanyLogo] = useState<string>("");
+  const [branding, setBranding] = useState<Branding>({ companyName: "CMM Grid", companyLogo: "" });
+
+  const fetchBranding = () => {
+    fetch("/api/branding", { cache: "no-store" })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data) {
+          setBranding({ companyName: data.companyName || "CMM Grid", companyLogo: data.companyLogo || "" });
+        }
+      })
+      .catch(() => {});
+  };
 
   useEffect(() => {
-    fetch("/api/settings", { cache: "no-store" })
-      .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data?.companyLogo) setCompanyLogo(data.companyLogo); })
-      .catch(() => {});
+    fetchBranding();
+
+    // Listen for settings-saved signal — works BOTH same-tab (CustomEvent) and cross-tab (StorageEvent)
+    const onCustom = () => fetchBranding();
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "cmm-settings-saved") fetchBranding();
+    };
+
+    window.addEventListener("cmm-settings-saved", onCustom);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener("cmm-settings-saved", onCustom);
+      window.removeEventListener("storage", onStorage);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Derive the subtitle from the company name (everything after the first word, or a short suffix)
+  const nameParts = branding.companyName.trim().split(/\s+/);
+  const nameTitle = nameParts[0] || "CMM Grid";
+  const nameSubtitle = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
 
   return (
     <>
@@ -72,17 +104,24 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
 
         {/* Logo */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100 flex-shrink-0">
-          <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 shadow-sm flex-shrink-0 overflow-hidden">
-            {companyLogo ? (
+          <div className={cn(
+            "flex items-center justify-center w-9 h-9 rounded-xl shadow-sm flex-shrink-0 overflow-hidden",
+            branding.companyLogo
+              ? "bg-transparent"
+              : "bg-gradient-to-br from-blue-500 to-blue-700"
+          )}>
+            {branding.companyLogo ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={companyLogo} alt="Logo" className="w-full h-full object-contain p-0.5" />
+              <img src={branding.companyLogo} alt="Logo" className="w-full h-full object-cover" />
             ) : (
               <Zap size={17} className="text-white" strokeWidth={2.5} />
             )}
           </div>
           <div className="min-w-0">
-            <p className="font-bold text-sm text-gray-900 tracking-tight leading-none">CMM Grid</p>
-            <p className="text-[10px] text-gray-400 font-mono uppercase tracking-widest mt-0.5">Electricals</p>
+            <p className="font-bold text-sm text-gray-900 tracking-tight leading-none truncate">{nameTitle}</p>
+            {nameSubtitle && (
+              <p className="text-[10px] text-gray-400 font-mono uppercase tracking-widest mt-0.5 truncate">{nameSubtitle}</p>
+            )}
           </div>
         </div>
 

@@ -148,11 +148,15 @@ CREATE TABLE IF NOT EXISTS settings (
   default_daily_rate DECIMAL(10, 2) DEFAULT 600,
   currency VARCHAR(10) DEFAULT 'INR',
   report_footer TEXT DEFAULT 'Confidential — CMM Electricals',
+  company_logo TEXT DEFAULT '',
   updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 -- Initialize settings
 INSERT INTO settings (id) VALUES (1) ON CONFLICT DO NOTHING;
+
+-- Migration: add company_logo if upgrading from an older schema
+ALTER TABLE settings ADD COLUMN IF NOT EXISTS company_logo TEXT DEFAULT '';
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_allocations_product    ON allocations(product_id);

@@ -4,11 +4,12 @@ import { useEffect, useState, useCallback } from "react";
 import { useAutoRefresh } from "@/hooks/useAutoRefresh";
 import {
   Users, Plus, X, Loader2, Phone,
-  IndianRupee, FolderKanban, Clock, ArrowRight,
+  IndianRupee, FolderKanban, Clock, ArrowRight, Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { confirmAction } from "@/lib/confirmToast";
 
 interface Worker {
   id: number; name: string; phone: string;
@@ -30,6 +31,7 @@ export default function LabourPage() {
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState(DEFAULT_FORM);
   const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -64,6 +66,33 @@ export default function LabourPage() {
       toast.error("Network error. Please try again.");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleDelete(worker: Worker, e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const confirmed = await confirmAction(
+      `Delete "${worker.name}"? This will permanently remove the worker and all their attendance, assignments, and payment records.`,
+      { confirmLabel: "Delete", danger: true }
+    );
+    if (!confirmed) return;
+
+    setDeletingId(worker.id);
+    try {
+      const res = await fetch(`/api/workers?id=${worker.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        toast.error(d.error || "Failed to delete worker");
+        return;
+      }
+      toast.success(`${worker.name} deleted`);
+      await load();
+    } catch {
+      toast.error("Network error");
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -141,61 +170,74 @@ export default function LabourPage() {
             {activeWorkersList.map((worker) => {
               const active = getActiveProjects(worker.id);
               const past = getPastProjects(worker.id);
+              const isDeleting = deletingId === worker.id;
               return (
-                <Link key={worker.id} href={`/labour/${worker.id}`} className="block glass glass-hover rounded-2xl p-5 border border-glass-border transition-all duration-300 animate-fade-in hover:border-cyan-glow/30 group">
-                  {/* Name + status */}
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className={cn("w-2 h-2 rounded-full flex-shrink-0", active.length > 0 ? "bg-success animate-pulse-slow" : "bg-space-blue-light")} />
-                        <span className={cn("text-xs font-semibold", active.length > 0 ? "text-success" : "text-text-secondary")}>
-                          {active.length > 0 ? "On Site" : "Bench"}
-                        </span>
-                      </div>
-                      <h3 className="text-base font-bold text-text-primary">{worker.name}</h3>
-                    </div>
-                    <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-accent/10 text-purple-soft border border-purple-accent/20 flex-shrink-0">
-                      {worker.trade}
-                    </span>
-                  </div>
-
-                  {/* Details */}
-                  <div className="space-y-1.5 mb-4">
-                    {worker.phone && (
-                      <div className="flex items-center gap-2 text-xs text-text-secondary">
-                        <Phone size={11} /><span>{worker.phone}</span>
-                      </div>
-                    )}
-                    {worker.dailyRate > 0 && (
-                      <div className="flex items-center gap-2 text-xs text-text-secondary">
-                        <IndianRupee size={11} /><span>₹{worker.dailyRate.toLocaleString("en-IN")}/day</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Active assignments */}
-                  {active.length > 0 && (
-                    <div className="border-t border-glass-border pt-3 mb-2 space-y-1">
-                      {active.map((a) => (
-                        <div key={a.id} className="flex items-center gap-2 text-xs text-cyan-glow hover:underline">
-                          <FolderKanban size={11} className="flex-shrink-0" />
-                          <span className="truncate">{a.projectName}</span>
-                          <Clock size={10} className="flex-shrink-0 text-text-secondary ml-auto" />
-                          <span className="text-text-secondary flex-shrink-0">{a.startDate}</span>
+                <div key={worker.id} className="relative group">
+                  <Link href={`/labour/${worker.id}`} className="block glass glass-hover rounded-2xl p-5 border border-glass-border transition-all duration-300 animate-fade-in hover:border-cyan-glow/30 group">
+                    {/* Name + status */}
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className={cn("w-2 h-2 rounded-full flex-shrink-0", active.length > 0 ? "bg-success animate-pulse-slow" : "bg-space-blue-light")} />
+                          <span className={cn("text-xs font-semibold", active.length > 0 ? "text-success" : "text-text-secondary")}>
+                            {active.length > 0 ? "On Site" : "Bench"}
+                          </span>
                         </div>
-                      ))}
+                        <h3 className="text-base font-bold text-text-primary">{worker.name}</h3>
+                      </div>
+                      <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-accent/10 text-purple-soft border border-purple-accent/20 flex-shrink-0">
+                        {worker.trade}
+                      </span>
                     </div>
-                  )}
 
-                  {/* Footer */}
-                  <div className="border-t border-glass-border pt-3 flex items-center justify-between text-xs text-text-secondary">
-                    <span>{past.length} past project{past.length !== 1 ? "s" : ""}</span>
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-mono">{active.length} active</span>
-                      <ArrowRight size={12} className="text-text-secondary group-hover:text-cyan-glow group-hover:translate-x-0.5 transition-all" />
+                    {/* Details */}
+                    <div className="space-y-1.5 mb-4">
+                      {worker.phone && (
+                        <div className="flex items-center gap-2 text-xs text-text-secondary">
+                          <Phone size={11} /><span>{worker.phone}</span>
+                        </div>
+                      )}
+                      {worker.dailyRate > 0 && (
+                        <div className="flex items-center gap-2 text-xs text-text-secondary">
+                          <IndianRupee size={11} /><span>₹{worker.dailyRate.toLocaleString("en-IN")}/day</span>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                </Link>
+
+                    {/* Active assignments */}
+                    {active.length > 0 && (
+                      <div className="border-t border-glass-border pt-3 mb-2 space-y-1">
+                        {active.map((a) => (
+                          <div key={a.id} className="flex items-center gap-2 text-xs text-cyan-glow hover:underline">
+                            <FolderKanban size={11} className="flex-shrink-0" />
+                            <span className="truncate">{a.projectName}</span>
+                            <Clock size={10} className="flex-shrink-0 text-text-secondary ml-auto" />
+                            <span className="text-text-secondary flex-shrink-0">{a.startDate}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Footer */}
+                    <div className="border-t border-glass-border pt-3 flex items-center justify-between text-xs text-text-secondary">
+                      <span>{past.length} past project{past.length !== 1 ? "s" : ""}</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono">{active.length} active</span>
+                        <ArrowRight size={12} className="text-text-secondary group-hover:text-cyan-glow group-hover:translate-x-0.5 transition-all" />
+                      </div>
+                    </div>
+                  </Link>
+
+                  {/* Delete button — always visible, top-right corner */}
+                  <button
+                    onClick={(e) => handleDelete(worker, e)}
+                    disabled={isDeleting}
+                    title="Delete worker"
+                    className="absolute top-3 right-3 z-10 p-1.5 rounded-lg bg-white border border-gray-200 text-gray-400 hover:text-danger hover:border-danger/40 hover:bg-danger/5 transition-all shadow-sm disabled:opacity-50"
+                  >
+                    {isDeleting ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
+                  </button>
+                </div>
               );
             })}
           </div>
@@ -208,26 +250,39 @@ export default function LabourPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 opacity-75">
                 {leftWorkersList.map((worker) => {
                   const past = getPastProjects(worker.id);
+                  const isDeleting = deletingId === worker.id;
                   return (
-                    <Link key={worker.id} href={`/labour/${worker.id}`} className="block glass rounded-2xl p-5 border border-glass-border transition-all duration-300 animate-fade-in hover:opacity-100 group">
-                      <div className="flex items-start justify-between mb-3">
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="w-2 h-2 rounded-full flex-shrink-0 bg-danger/50" />
-                            <span className="text-xs font-semibold text-danger">Left Company</span>
+                    <div key={worker.id} className="relative group">
+                      <Link href={`/labour/${worker.id}`} className="block glass rounded-2xl p-5 border border-glass-border transition-all duration-300 animate-fade-in hover:opacity-100 group">
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="w-2 h-2 rounded-full flex-shrink-0 bg-danger/50" />
+                              <span className="text-xs font-semibold text-danger">Left Company</span>
+                            </div>
+                            <h3 className="text-base font-bold text-text-secondary line-through">{worker.name}</h3>
                           </div>
-                          <h3 className="text-base font-bold text-text-secondary line-through">{worker.name}</h3>
+                          <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-glass-border/30 text-text-secondary border border-glass-border/50 flex-shrink-0">
+                            {worker.trade}
+                          </span>
                         </div>
-                        <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-glass-border/30 text-text-secondary border border-glass-border/50 flex-shrink-0">
-                          {worker.trade}
-                        </span>
-                      </div>
 
-                      <div className="border-t border-glass-border pt-3 flex items-center justify-between text-xs text-text-secondary">
-                        <span>{past.length} past project{past.length !== 1 ? "s" : ""}</span>
-                        <ArrowRight size={12} className="text-text-secondary group-hover:translate-x-0.5 transition-all" />
-                      </div>
-                    </Link>
+                        <div className="border-t border-glass-border pt-3 flex items-center justify-between text-xs text-text-secondary">
+                          <span>{past.length} past project{past.length !== 1 ? "s" : ""}</span>
+                          <ArrowRight size={12} className="text-text-secondary group-hover:translate-x-0.5 transition-all" />
+                        </div>
+                      </Link>
+
+                      {/* Delete button */}
+                      <button
+                        onClick={(e) => handleDelete(worker, e)}
+                        disabled={isDeleting}
+                        title="Delete worker"
+                        className="absolute top-3 right-3 z-10 p-1.5 rounded-lg bg-white border border-gray-200 text-gray-400 hover:text-danger hover:border-danger/40 hover:bg-danger/5 transition-all shadow-sm disabled:opacity-50"
+                      >
+                        {isDeleting ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
+                      </button>
+                    </div>
                   );
                 })}
               </div>

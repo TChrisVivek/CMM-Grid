@@ -19,7 +19,19 @@ interface StoreMeta {
   nextDirectPurchaseId: number;
 }
 
-interface Store {
+export interface AppSettings {
+  companyName: string;
+  companyAddress: string;
+  companyPhone: string;
+  companyEmail: string;
+  defaultLowStockThreshold: number;
+  defaultDailyRate: number;
+  currency: string;
+  reportFooter: string;
+  companyLogo: string;
+}
+
+export interface Store {
   products: Product[];
   projects: Project[];
   allocations: Allocation[];
@@ -31,6 +43,7 @@ interface Store {
   clientPayments: ClientPayment[];
   directPurchases: DirectPurchase[];
   users: SystemUser[];
+  settings?: AppSettings;
   _meta: StoreMeta;
 }
 

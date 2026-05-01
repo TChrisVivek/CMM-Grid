@@ -5,7 +5,7 @@ import {
    Building2, SlidersHorizontal, FileText,
    Database, Save, CheckCircle, Download, Loader2,
    AlertTriangle, RefreshCw, ChevronRight,
-   ShieldAlert, UserCheck, UserX, Ban, RotateCcw,
+   ShieldAlert, UserCheck, UserX, Ban, RotateCcw, Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
@@ -49,6 +49,7 @@ export default function SettingsPage() {
    const [saving, setSaving] = useState(false);
    const [saved, setSaved] = useState(false);
    const [activeSection, setActiveSection] = useState("company");
+   const [clearing, setClearing] = useState(false);
    const { data: session } = useSession();
 
    // Admin User State
@@ -94,8 +95,38 @@ export default function SettingsPage() {
          setSettings(await res.json());
          setSaved(true);
          setTimeout(() => setSaved(false), 3000);
+         // Signal sidebar to re-fetch branding (same-tab CustomEvent + cross-tab StorageEvent)
+         window.dispatchEvent(new CustomEvent("cmm-settings-saved"));
+         localStorage.setItem("cmm-settings-saved", Date.now().toString());
       }
       setSaving(false);
+   }
+
+   async function handleClearData() {
+      const confirmed = window.confirm(
+         "⚠️ CLEAR ALL DATA\n\nThis will permanently delete:\n• All inventory items\n• All projects\n• All workers & labour records\n• All allocations & attendance\n• All payments\n• Company settings (name, logo, etc.)\n\n✅ WHAT IS KEPT:\n• Your Google login accounts\n• Your Admin / User roles\n• You will still be able to sign in normally\n\nAre you absolutely sure?"
+      );
+      if (!confirmed) return;
+
+      // Double-confirm for safety
+      const reconfirmed = window.confirm("Final confirmation — delete all data? (Your login access is NOT affected)");
+      if (!reconfirmed) return;
+
+      setClearing(true);
+      try {
+         const res = await fetch("/api/settings/reset", { method: "POST" });
+         if (res.ok) {
+            toast.success("All data cleared. Reloading...");
+            setTimeout(() => window.location.reload(), 1500);
+         } else {
+            const d = await res.json().catch(() => ({}));
+            toast.error(d.error || "Failed to clear data");
+         }
+      } catch {
+         toast.error("Network error while clearing data");
+      } finally {
+         setClearing(false);
+      }
    }
 
    async function changeUserRole(email: string, role: string) {
@@ -661,6 +692,54 @@ export default function SettingsPage() {
                            </div>
                         </div>
                      </div>
+
+                     {/* Danger Zone — Clear All Data */}
+                     {isAdmin && (
+                        <div className="glass rounded-2xl overflow-hidden border border-danger/30">
+                           <div className="px-6 py-5 border-b border-danger/20 flex items-center gap-3">
+                              <div className="p-2 rounded-xl bg-danger/10 border border-danger/20">
+                                 <Trash2 size={17} className="text-danger" />
+                              </div>
+                              <div>
+                                 <h2 className="text-sm font-bold text-danger">Danger Zone</h2>
+                                 <p className="text-xs text-text-secondary mt-0.5">Irreversible actions — proceed with extreme caution</p>
+                              </div>
+                           </div>
+                           <div className="p-6 space-y-4">
+
+                              {/* Safe callout — login not affected */}
+                              <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl bg-success/5 border border-success/25">
+                                 <CheckCircle size={14} className="text-success mt-0.5 flex-shrink-0" />
+                                 <p className="text-xs text-success/90 leading-relaxed">
+                                    <strong>Your login access is completely safe.</strong> Google accounts, Admin roles, and all user permissions are <strong>never</strong> deleted by this action. You will be able to sign in normally after the reset.
+                                 </p>
+                              </div>
+
+                              <div className="rounded-xl border border-danger/20 bg-danger/5 p-4">
+                                 <p className="text-sm font-semibold text-danger mb-1">Clear All Business Data</p>
+                                 <p className="text-xs text-text-secondary mb-1 leading-relaxed">
+                                    Permanently deletes:
+                                 </p>
+                                 <ul className="text-xs text-text-secondary mb-4 space-y-0.5 ml-3 list-disc">
+                                    <li>All inventory items &amp; stock records</li>
+                                    <li>All projects &amp; site data</li>
+                                    <li>All workers, attendance &amp; payments</li>
+                                    <li>All allocations &amp; usages</li>
+                                    <li>Company settings (name, logo, address)</li>
+                                 </ul>
+                                 <button
+                                    type="button"
+                                    onClick={handleClearData}
+                                    disabled={clearing}
+                                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-danger/15 border border-danger/30 text-danger text-sm font-bold hover:bg-danger/25 transition-all disabled:opacity-60"
+                                 >
+                                    {clearing ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
+                                    {clearing ? "Clearing…" : "Clear All Data"}
+                                 </button>
+                              </div>
+                           </div>
+                        </div>
+                     )}
                   </div>
                )}
             </div>
