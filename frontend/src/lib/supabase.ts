@@ -4,47 +4,32 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
 let _supabase: SupabaseClient | null = null;
-let _isConnected: boolean | null = null;
 
 function getClient(): SupabaseClient {
   if (!_supabase) {
     if (!supabaseUrl || !supabaseAnonKey) {
-      console.warn('[supabase] Credentials missing — using local store fallback.');
+      console.warn('[supabase] Credentials missing — local store fallback will be used for reads.');
     }
-    _supabase = createClient(supabaseUrl || 'https://placeholder.supabase.co', supabaseAnonKey || 'placeholder');
+    _supabase = createClient(
+      supabaseUrl || 'https://placeholder.supabase.co',
+      supabaseAnonKey || 'placeholder'
+    );
   }
   return _supabase;
 }
 
 /**
- * Check if Supabase is reachable (cached after first check).
- * Returns true if a simple query succeeds, false otherwise.
+ * Returns true when Supabase credentials are present in the environment.
+ * We no longer do a live network ping — that caused false negatives when
+ * the health-check table was blocked by RLS or the project was briefly slow.
+ * Real query errors are surfaced directly by each route handler.
  */
-export async function isSupabaseAvailable(): Promise<boolean> {
-  if (_isConnected !== null) return _isConnected;
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    _isConnected = false;
-    console.warn('[supabase] Credentials missing — using local store fallback.');
-    return false;
+export function isSupabaseAvailable(): boolean {
+  const configured = !!(supabaseUrl && supabaseAnonKey);
+  if (!configured) {
+    console.warn('[supabase] Credentials missing — local store fallback will be used for reads.');
   }
-
-  try {
-    const client = getClient();
-    // Use the settings singleton (id=1, always exists, no RLS) as a health check
-    const { error } = await client.from('settings').select('id').eq('id', 1).limit(1);
-    _isConnected = !error;
-    if (error) {
-      console.warn('[supabase] Connection test failed:', error.message, '— falling back to local store.');
-    } else {
-      console.log('[supabase] Connected successfully.');
-    }
-  } catch {
-    console.warn('[supabase] Connection failed — using local store fallback.');
-    _isConnected = false;
-  }
-
-  return _isConnected;
+  return configured;
 }
 
 export const supabase = getClient();
