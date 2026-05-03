@@ -39,10 +39,17 @@ export default function ProjectsPage() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [pRes, aRes] = await Promise.all([fetch("/api/projects"), fetch("/api/allocations")]);
-    setProjects(await pRes.json());
-    setAllocations(await aRes.json());
-    setLoading(false);
+    try {
+      const [pRes, aRes] = await Promise.all([fetch("/api/projects"), fetch("/api/allocations")]);
+      if (pRes.ok) setProjects(await pRes.json());
+      else console.error("[projects] GET /api/projects failed:", pRes.status);
+      if (aRes.ok) setAllocations(await aRes.json());
+      else console.error("[projects] GET /api/allocations failed:", aRes.status);
+    } catch (err) {
+      console.error("[projects] load error:", err);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => { load(); }, [load]);
