@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { adminSupabase, supabase } from "@/lib/supabase";
 
 export async function POST(req: Request) {
   try {
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     const ext = file.name.split('.').pop()?.substring(0, 10) || 'png';
     const filename = `file_${Date.now()}_${Math.floor(Math.random() * 10000)}.${ext}`;
 
-    const { error } = await supabase.storage
+    const { error } = await adminSupabase.storage
       .from(bucket)
       .upload(filename, buffer, {
         contentType: file.type,

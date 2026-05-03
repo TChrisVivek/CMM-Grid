@@ -2,8 +2,10 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 let _supabase: SupabaseClient | null = null;
+let _adminSupabase: SupabaseClient | null = null;
 
 function getClient(): SupabaseClient {
   if (!_supabase) {
@@ -33,3 +35,11 @@ export function isSupabaseAvailable(): boolean {
 }
 
 export const supabase = getClient();
+
+export const adminSupabase = (() => {
+  if (!_adminSupabase && supabaseUrl && supabaseServiceKey) {
+    _adminSupabase = createClient(supabaseUrl, supabaseServiceKey);
+  }
+  return _adminSupabase || getClient(); // fallback to regular client if no service key
+})();
+
