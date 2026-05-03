@@ -75,6 +75,7 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
       siteAddress: project.site_address,
       status: project.status,
       budget: Number(project.budget),
+      electricalPlans: project.electrical_plans || [],
       createdAt: project.created_at,
     };
 
@@ -159,6 +160,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     if (body.siteAddress !== undefined) updateData.site_address = body.siteAddress.trim();
     if (body.status !== undefined) updateData.status = body.status;
     if (body.budget !== undefined) updateData.budget = Number(body.budget);
+    if (body.electricalPlans !== undefined) updateData.electrical_plans = body.electricalPlans;
 
     const { data, error } = await supabase
       .from('projects')
@@ -176,6 +178,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
       siteAddress: data.site_address,
       status: data.status,
       budget: Number(data.budget),
+      electricalPlans: data.electrical_plans || [],
       createdAt: data.created_at,
     });
   }
