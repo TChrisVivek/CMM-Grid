@@ -87,7 +87,21 @@ export function readStore(): Store {
 }
 
 export function writeStore(store: Store): void {
-  writeFileSync(STORE_PATH, JSON.stringify(store, null, 2), "utf-8");
+  try {
+    writeFileSync(STORE_PATH, JSON.stringify(store, null, 2), "utf-8");
+  } catch (err: unknown) {
+    const isReadOnly =
+      err instanceof Error &&
+      (err.message.includes('EROFS') || err.message.includes('read-only'));
+    if (isReadOnly) {
+      throw new Error(
+        'This deployment uses a read-only filesystem. ' +
+        'Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY ' +
+        'in your Vercel project environment variables to enable database writes.'
+      );
+    }
+    throw err;
+  }
 }
 
 export function nextId(store: Store, key: keyof StoreMeta): number {

@@ -80,6 +80,14 @@ export async function POST(req: NextRequest) {
       }, { status: 201 });
     }
 
+    // On Vercel the filesystem is read-only — cannot use local store for writes
+    if (process.env.VERCEL) {
+      return NextResponse.json(
+        { error: 'Database not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to your Vercel project\'s Environment Variables and redeploy.' },
+        { status: 503 }
+      );
+    }
+
     // Fallback: local store
     const store = readStore();
     const newProject = {
@@ -142,6 +150,14 @@ export async function PATCH(req: NextRequest) {
         budget: data.budget,
         createdAt: data.created_at,
       });
+    }
+
+    // On Vercel the filesystem is read-only — cannot use local store for writes
+    if (process.env.VERCEL) {
+      return NextResponse.json(
+        { error: 'Database not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to your Vercel project\'s Environment Variables and redeploy.' },
+        { status: 503 }
+      );
     }
 
     // Fallback: local store

@@ -25,13 +25,14 @@ export async function isSupabaseAvailable(): Promise<boolean> {
 
   if (!supabaseUrl || !supabaseAnonKey) {
     _isConnected = false;
+    console.warn('[supabase] Credentials missing — using local store fallback.');
     return false;
   }
 
   try {
     const client = getClient();
-    // Quick connectivity test — just try to hit the REST API
-    const { error } = await client.from('products').select('id').limit(1);
+    // Use the settings singleton (id=1, always exists, no RLS) as a health check
+    const { error } = await client.from('settings').select('id').eq('id', 1).limit(1);
     _isConnected = !error;
     if (error) {
       console.warn('[supabase] Connection test failed:', error.message, '— falling back to local store.');
